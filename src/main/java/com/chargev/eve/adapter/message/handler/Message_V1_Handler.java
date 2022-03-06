@@ -16,9 +16,8 @@ import org.springframework.stereotype.Service;
  * Test :
  * func_1_2
  */
-@Service("Message_A1_Handler")
-public class Message_A1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
-
+@Service("Message_V1_Handler")
+public class Message_V1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
     public Integer serve(MessageHandlerContext context) {
         String url = context.makeUrl("/requestModeChange");
 
@@ -48,13 +47,13 @@ public class Message_A1_Handler implements MessageHandler<MessageHandlerContext,
 
         req = Api_B1_Req.builder()
                 .mode(mode)
-                .modeType("02")         // 충전기 충전량 변경
-                .soundSet("FFFFFFFF")   // 쓰레기값
-                .chargeKwh("0")         // 무조건 0
+                .modeType("01")     // 충전기 볼륨 변경
+                .soundSet(soundSet)
+                .chargeKwh("0")     // 무조건 0
                 .build();
 
         context.sendRequest(req, url);
         return 1;
     }
-
 }
+
