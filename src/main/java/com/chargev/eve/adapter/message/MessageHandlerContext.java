@@ -1,6 +1,5 @@
 package com.chargev.eve.adapter.message;
 
-import com.chargev.eve.adapter.socketServer.ValidInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -14,15 +13,15 @@ import java.util.Collections;
 @Getter @Setter
 public class MessageHandlerContext {
     private final Message message;
-    private final String serverDomain;
+    private final String serverUrl;
     //private Object payloadObject;
     //private ValidInfo validInfo = new ValidInfo(true, "00");
     //private Message response;
 
 
-    public MessageHandlerContext(Message message, String serverDomain) {
+    public MessageHandlerContext(Message message, String serverUrl) {
         this.message = message;
-        this.serverDomain = serverDomain;
+        this.serverUrl = serverUrl;
     }
 
     static public ResponseEntity<String> sendRequest(Object body, String url) {
@@ -58,5 +57,12 @@ public class MessageHandlerContext {
                 String.class); //{요청시 반환되는 데이터 타입
 
         return response;
+    }
+
+    public String makeUrl(String...in) {
+        String out = serverUrl;
+        for(String a:in)
+            out += a;
+        return out;
     }
 }
