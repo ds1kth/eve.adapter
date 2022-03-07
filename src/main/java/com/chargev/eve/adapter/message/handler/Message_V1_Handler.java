@@ -53,7 +53,7 @@ public class Message_V1_Handler implements MessageHandler<MessageHandlerContext,
                 .build();
 
         context.sendRequest(req, url);
-        return 1;
+        return 0;
     }
 }
 

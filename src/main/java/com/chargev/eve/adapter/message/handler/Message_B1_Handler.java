@@ -64,7 +64,7 @@ public class Message_B1_Handler implements MessageHandler<MessageHandlerContext,
 
         context.sendRequest(req, url);
 
-        return 1;
+        return 0;
     }
 }
 

@@ -55,7 +55,7 @@ public class Message_I1_Handler implements MessageHandler<MessageHandlerContext,
         String url = context.makeUrl("/reset", "/0", resetType);
         context.sendRequest(null, url);
 
-        return 1;
+        return 0;
     }
 }
 

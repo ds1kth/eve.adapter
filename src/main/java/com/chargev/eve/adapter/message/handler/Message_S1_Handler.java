@@ -10,6 +10,6 @@ public class Message_S1_Handler implements MessageHandler<MessageHandlerContext,
         String url = context.getServerUrl() + "/requestChargerStatus";
         context.sendRequest(null, url);
 
-        return 1;
+        return 0;
     }
 }

@@ -15,6 +15,6 @@ public class Message_A2_Handler implements MessageHandler<MessageHandlerContext,
 //        String url = context.getServerUrl() + "/requestChargerStatus";
 //        context.sendRequest(null, url);
 
-        return 1;
+        return 0;
     }
 }

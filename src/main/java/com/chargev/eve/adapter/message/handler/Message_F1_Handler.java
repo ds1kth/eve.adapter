@@ -37,6 +37,6 @@ public class Message_F1_Handler implements MessageHandler<MessageHandlerContext,
                 .location(firmwareUrl)
                 .build();
         context.sendRequest(req, url);
-        return 1;
+        return 0;
     }
 }

@@ -20,6 +20,6 @@ public class Message_G2_Handler {
         String url = context.makeUrl("/downloadPriceInfo", "/", userType);
         context.sendRequest(null, url);
 
-        return 1;
+        return 0;
     }
 }

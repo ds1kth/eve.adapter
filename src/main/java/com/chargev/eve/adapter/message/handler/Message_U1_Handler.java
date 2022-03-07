@@ -22,6 +22,6 @@ public class Message_U1_Handler implements MessageHandler<MessageHandlerContext,
 
         context.sendRequest(null, url);
 
-        return 1;
+        return 0;
     }
 }

@@ -54,7 +54,7 @@ public class Message_A1_Handler implements MessageHandler<MessageHandlerContext,
                 .build();
 
         context.sendRequest(req, url);
-        return 1;
+        return 0;
     }
 
 }

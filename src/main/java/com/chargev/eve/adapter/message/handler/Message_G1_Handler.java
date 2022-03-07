@@ -21,6 +21,6 @@ public class Message_G1_Handler implements MessageHandler<MessageHandlerContext,
         String url = context.makeUrl("/downloadPriceInfo");
         context.sendRequest(null, url);
 
-        return 1;
+        return 0;
     }
 }

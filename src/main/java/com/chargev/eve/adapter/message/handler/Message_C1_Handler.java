@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
  * KT(B2)
  *
  * Test :
- * func_1_16
+ * func_1_8
  */
 @Service("Message_C1_Handler")
 public class Message_C1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
@@ -54,7 +54,7 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
             e.printStackTrace();
         }
 
-        return 1;
+        return 0;
     }
 
     private long getVd(byte[] payload) throws IllegalArgumentException {
