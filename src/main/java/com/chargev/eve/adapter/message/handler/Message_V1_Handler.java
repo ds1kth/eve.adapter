@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service("Message_V1_Handler")
 public class Message_V1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
     public Integer serve(MessageHandlerContext context) {
-        log.info("[V1] {}", context);
+        log.debug("[V1] {}", context);
         
         String url = context.makeUrl("/requestModeChange");
 
@@ -55,7 +55,8 @@ public class Message_V1_Handler implements MessageHandler<MessageHandlerContext,
                 .soundSet(soundSet)
                 .chargeKwh("0")     // 무조건 0
                 .build();
-
+        
+        log.info("[V1][REQ] {}", req);
         context.sendRequest(req, url);
         return 0;
     }
