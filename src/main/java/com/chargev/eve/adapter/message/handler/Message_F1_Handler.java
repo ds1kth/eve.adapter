@@ -4,6 +4,7 @@ import com.chargev.eve.adapter.apiClient.api.Api_C1_Req;
 import com.chargev.eve.adapter.apiClient.api.Api_F1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -20,9 +21,11 @@ import java.net.URISyntaxException;
  * Test :
  * func_1_1
  */
+@Slf4j
 @Service("Message_F1_Handler")
 public class Message_F1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
     public Integer serve(MessageHandlerContext context) {
+        log.debug("[F1] {}", context);
 
         String url = context.makeUrl("/UpdateFirmware");
         //context.sendRequest(null, url);
@@ -31,7 +34,8 @@ public class Message_F1_Handler implements MessageHandler<MessageHandlerContext,
         try {
             firmwareUrl = new URI("www.naver.com");
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            log.error("[Exception] {}", e.getStackTrace()[0]);
         }
         Api_F1_Req req = Api_F1_Req.builder()
                 .location(firmwareUrl)

@@ -2,6 +2,7 @@ package com.chargev.eve.adapter.message.handler;
 
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,9 +15,12 @@ import org.springframework.stereotype.Service;
  * Test :
  * func_
  */
+@Slf4j
 @Service("Message_G1_Handler")
 public class Message_G1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
     public Integer serve(MessageHandlerContext context) {
+        log.debug("[G1] {}", context);
+
         String userType;
         String url = context.makeUrl("/downloadPriceInfo");
         context.sendRequest(null, url);

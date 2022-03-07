@@ -4,6 +4,7 @@ import com.chargev.eve.adapter.apiClient.api.Api_B1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * API: 3.11	RequestModeChange
@@ -16,10 +17,12 @@ import org.springframework.stereotype.Service;
  * Test :
  * func_1_2
  */
+@Slf4j
 @Service("Message_A1_Handler")
 public class Message_A1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
 
     public Integer serve(MessageHandlerContext context) {
+        log.debug("[A1] {}", context);
         String url = context.makeUrl("/requestModeChange");
 
         byte[] payload = context.getMessage().getPayload().getBytes();

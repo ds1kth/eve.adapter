@@ -3,6 +3,7 @@ package com.chargev.eve.adapter.message.handler;
 import com.chargev.eve.adapter.apiClient.api.Api_N1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,12 +16,15 @@ import org.springframework.stereotype.Service;
  * Test :
  * func_1_24
  */
+@Slf4j
 @Service("Message_N1_Handler")
 public class Message_N1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
 
     private final int VD_LENGTH = 2;
     private final int ML_LENGTH = 2;
     public Integer serve(MessageHandlerContext context) {
+        log.debug("[N1] {}", context);
+
         String url = context.makeUrl("/requestInfoChange");
 
         byte[] payload = context.getMessage().getPayload().getBytes();

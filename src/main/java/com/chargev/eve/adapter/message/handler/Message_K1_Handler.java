@@ -2,6 +2,7 @@ package com.chargev.eve.adapter.message.handler;
 
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,9 +16,12 @@ import org.springframework.stereotype.Service;
  * Test :
  * func_
  */
+@Slf4j
 @Service("Message_K1_Handler")
 public class Message_K1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
     public Integer serve(MessageHandlerContext context) {
+        log.debug("[K1] {}", context);
+
         String url = context.getServerUrl() + "/UpdateFirmware";
         context.sendRequest(null, url);
 

@@ -2,6 +2,7 @@ package com.chargev.eve.adapter.message.handler;
 
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,10 +16,13 @@ import org.springframework.stereotype.Service;
  * Test :
  * func_1_16
  */
+@Slf4j
 @Service("Message_I1_Handler")
 public class Message_I1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
     private final int RESET_TYPE_LENGTH = 2;
     public Integer serve(MessageHandlerContext context) {
+        log.debug("[I1] {}", context);
+
         byte[] payload = context.getMessage().getPayload().getBytes();
         byte[] vdLength = new byte[RESET_TYPE_LENGTH];
         vdLength[0] = payload[0];

@@ -4,6 +4,7 @@ package com.chargev.eve.adapter.message.handler;
 import com.chargev.eve.adapter.apiClient.api.Api_C1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
  * Test :
  * func_1_8
  */
+@Slf4j
 @Service("Message_C1_Handler")
 public class Message_C1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
     private final int VD_LENGTH = 2;
@@ -28,6 +30,8 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
     private final int PAY_METHOD_LENGTH = 1;
 
     public Integer serve(MessageHandlerContext context) {
+        log.debug("[C1] {}", context);
+
         String url = context.makeUrl("/requestChargingStart");
         byte[] payload = context.getMessage().getPayload().getBytes();
 
@@ -51,7 +55,8 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
             context.sendRequest(req, url);
         }catch (IllegalArgumentException e) {
             // 인자가 맞지 않으면 api 를 호출하지 않는다.
-            e.printStackTrace();
+            //e.printStackTrace();
+            log.error("[Exception] {}", e.getStackTrace()[0]);
         }
 
         return 0;
