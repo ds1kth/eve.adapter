@@ -66,23 +66,6 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             return;
         }
 
-//        // payload 만 읽음
-//        int payloadLength = readableBytes - 2;  // exclude stx, etx
-//        byte[] payload;
-//        payload = new byte[payloadLength];
-//
-//        // read from position 1
-//        for(int i=0, k = 1; i<payloadLength; i++, k++){
-//            payload[i] = data[k];
-//        }
-//
-//        // 수신데이터 확인용
-////        String str2 = new String(payload);
-////        System.out.println(str2);
-//
-//        // 파이프라인의 다음 핸들러에게 읽은 데이터를 바이트배열로 넘겨준다.
-//        out.add(payload);
-        
         // 전부다 넘김
         out.add(data);
     }
