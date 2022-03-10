@@ -1,11 +1,4 @@
-server.port : 8081
-
-socketServer:
-  address: 127.0.0.1
-  port: 8088
-apiServer:
-  address: 127.0.0.1
-  port: 8080
-bizServer:
-  address: 127.0.0.1
-  port: 8090
+spring:
+  profiles:
+    active: dev
+    #active: local

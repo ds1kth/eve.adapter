@@ -1,0 +1,30 @@
+server.port : 8081
+
+socketServer:
+  address: 127.0.0.1
+  port: 8088
+apiServer:
+  address: 127.0.0.1
+  port: 8080
+bizServer:
+  address: 127.0.0.1
+  port: 8090
+
+logging:
+  #pattern:
+  #file: "%d %-5level [%thread] %logger.%method:%line : %msg%n"
+  #file:
+  #name: ./logs/biz/biz.log
+  level:
+    root: info
+    com.chargev: info
+    sun.rmi: info
+    javax.management: info
+    com.couchbase: info
+    org.apache: info
+    org.hibernate: info
+    org.springframework: info
+  logback:
+    rollingpolicy:
+      max-file-size: 500MB
+      max-history: 10
