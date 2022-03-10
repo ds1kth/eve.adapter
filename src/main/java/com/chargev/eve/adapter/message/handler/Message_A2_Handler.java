@@ -6,7 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * 
+ * 
+ * 
+ * SMS 전송
  */
 @Slf4j
 @Service("Message_A2_Handler")

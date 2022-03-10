@@ -1,6 +1,5 @@
 package com.chargev.eve.adapter.message.handler;
 
-import com.chargev.eve.adapter.apiClient.api.Api_C1_Req;
 import com.chargev.eve.adapter.apiClient.api.Api_F1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
