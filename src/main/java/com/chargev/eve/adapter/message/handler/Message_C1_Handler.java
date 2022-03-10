@@ -1,19 +1,29 @@
 
 package com.chargev.eve.adapter.message.handler;
 
-import com.chargev.eve.adapter.apiClient.api.Api_C1_Req;
+import com.chargev.eve.adapter.apiClient.api.Api_C1_ChargEV_Req;
+import com.chargev.eve.adapter.apiClient.api.Api_C1_KT_Start_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * API: 3.24 RequestChargingStart
- * 충전기가 충전을 시작하도록 제어 명령을 전달 한다.
+ * API:
+ *
+ * KT -
+ *   3.24 RequestChargingStart
+ *   충전기가 충전을 시작하도록 제어 명령을 전달 한다.
+ *   3.25 RequestChargeStop
+ *   충전기가 후불 결제를 진행하도록 제어 명령 전달한다.
+ *
+ * Chargev -
+ *   3.29	RequestChargingStartAndStop
+ *   충전기 충전 시작, 종료 요청합니다.
  *
  * Spec :
- * 차지비(Q1)
- * KT(B2)
+ * 차지비(충전 시작 , 충전 중지 - Q1)
+ * KT(충전 시작 - B2), (충전 중지 - E2)
  *
  * Test :
  * func_1_8
@@ -21,7 +31,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service("Message_C1_Handler")
 public class Message_C1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
-    private final int VD_LENGTH = 2;
     private final int CARD_NUMBER_LENGTH = 16;
     private final int CHARGING_TIME_LENGTH = 6;
     private final int DB_CODE_LENGTH = 20;
@@ -32,19 +41,43 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
     public Integer serve(MessageHandlerContext context) {
         log.debug("[C1] {}", context);
 
-        String url = context.makeUrl("/requestChargingStart");
+        String url = null;
         byte[] payload = context.getMessage().getPayload().getBytes();
 
         try {
-            long vd = getVd(payload);
+            long vd = context.getMessage().getPayloadLength();
             boolean kt = false;
 
-            // 43 : 중계기 소스에서 값 가져옴
-            if(vd > 43){
+            // 43 : 중계기 소스에서 값 가져옴.
+            // TODO : 43 이하라 하더라도 KT 의 "충전 중지" 전문 일수 있다.
+            if (vd > 43) {
                 kt = true;
+                processKT(context, payload);
             }
+            else {
+                processChargEV(context, payload);
+            }
+        }
+        catch (Exception e){
+            log.error("[Exception] {}", e.getStackTrace()[0]);
+        }
+        return 0;
+    }
 
-            Api_C1_Req req = Api_C1_Req.builder()
+    /**
+     *
+     * @param context
+     * @param payload
+     * @throws Exception
+     */
+    void processKT(MessageHandlerContext context, byte[] payload) throws Exception {
+        String url = null;
+        boolean kt = true;
+
+        if(isChargingStart(kt, payload) == true) {
+            Api_C1_KT_Start_Req req = null;
+            url = context.makeUrl("/requestChargingStart");
+            req = Api_C1_KT_Start_Req.builder()
                     .mbrCardNo(getCardnubmer(kt, payload))
                     .charge(getCurrent(kt, payload))
                     .chargeTime(getChargingTime(kt, payload))
@@ -52,15 +85,43 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
                     .pay(getPayMount(kt, payload))
                     .plugType(getPlugType(kt, payload))
                     .build();
-                    
-            context.sendRequest(req, url, context.getMessage().getCmd());
-        }catch (IllegalArgumentException e) {
-            // 인자가 맞지 않으면 api 를 호출하지 않는다.
-            //e.printStackTrace();
-            log.error("[Exception] {}", e.getStackTrace()[0]);
+            context.sendRequest(req, url, context.getMessage().getCmd(), "KT(B2)");
         }
+//        else {
+//            Api_C1_Stop_Req req = null;
+//            url = context.makeUrl("/requestChargingStop");
+//
+//            if(kt == true) {
+//                req = Api_C1_Stop_Req.builder()
+//                        .controlType("01")  // KT 규격서
+//                        .paymentType("00")  // KT 규격서
+//                        .plugType("02")     // 0x02 : AC 완속, KT 중계기 소스를 보면 무조건 02 임
+//                        .build();
+//            }
+//
+//            context.sendRequest(req, url, context.getMessage().getCmd());
+//        }
+    }
 
-        return 0;
+    /**
+     *
+     * @param context
+     * @param payload
+     * @throws Exception
+     */
+    void processChargEV(MessageHandlerContext context, byte[] payload) throws Exception {
+        String url = null;
+        boolean kt = false;
+        Api_C1_ChargEV_Req req = null;
+
+        url = context.makeUrl("/requestChargingStartAndStop");
+        req = Api_C1_ChargEV_Req.builder()
+                .mbrCardNo(getCardnubmer(kt, payload))
+                //.tid(getPayMethod(kt, payload))   // 주문 번호?
+                .chargingCommand(getChargingCommand(kt, payload))
+                .chargedTime(getChargingTime(kt, payload))
+                .build();
+        context.sendRequest(req, url, context.getMessage().getCmd(), "ChargEV(Q1)");
     }
 
     private long getVd(byte[] payload) throws IllegalArgumentException {
@@ -72,7 +133,7 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
 
     private String getCardnubmer(boolean kt, byte[] payload) throws IllegalArgumentException {
         byte[] cardnubmer = new byte[16];
-        int start = VD_LENGTH;
+        int start = 0;
 
         for (int i = 0; i < 16; i++, start++) {
             cardnubmer[i] = payload[start];
@@ -85,11 +146,10 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
 
     private String getChargingTime(boolean kt, byte[] payload) throws IllegalArgumentException {
         byte[] chargingTime = new byte[6];
-        int start = VD_LENGTH + CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH;
-        if (kt == true) {
-            for (int i = 0; i < 6; i++, start++) {
-                chargingTime[i] = payload[start];
-            }
+        int start = CARD_NUMBER_LENGTH;
+
+        for (int i = 0; i < 6; i++, start++) {
+            chargingTime[i] = payload[start];
         }
 
         String str = new String(chargingTime);
@@ -99,7 +159,7 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
 
     private String getCurrent(boolean kt, byte[] payload) throws IllegalArgumentException {
         byte[] current = new byte[4];
-        int start = VD_LENGTH + CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH;
+        int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH;
         if (kt == true) {
             for (int i = 0; i < 4; i++, start++) {
                 current[i] = payload[start];
@@ -112,7 +172,7 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
     }
 
     private String getPayMethod(boolean kt, byte[] payload) throws IllegalArgumentException {
-        int start = VD_LENGTH + CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH + CHARGING_AMOUNT_LENGTH;
+        int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH + CHARGING_AMOUNT_LENGTH;
         byte[] payMethod = new byte[1];
         payMethod[0] = payload[start];
         String str = new String(payMethod);
@@ -131,7 +191,7 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
     }
 
     private String getPlugType(boolean kt, byte[] payload) throws IllegalArgumentException {
-        int start = VD_LENGTH + CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH;
+        int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH;
         byte[] plugType = new byte[1];
         plugType[0] = payload[start];
         String str = new String(plugType);
@@ -173,9 +233,47 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
         return out;
     }
 
+    private String getChargingCommand(boolean kt, byte[] payload) throws IllegalArgumentException {
+        int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH;
+        byte[] plugType = new byte[1];
+        plugType[0] = payload[start];
+        String str = new String(plugType);
+        String out;
+
+/*      KT 중계기 C# 소스
+        (0x01: DC차데모, 0x04: AC3상,0x05:DC콤보 0x02: AC완속)
+        public const string DEF_CHARGING_WEB_AC3PHASE = "1"; // Start, 급속
+        public const string DEF_CHARGING_WEB_DCCHADEMO = "2"; // Start, 급속
+        public const string DEF_CHARGING_WEB_DCCOMBO = "3"; // Start, 급속
+        public const string DEF_CHARGING_WEB_LEFT = "L"; // 왼쪽 사용자 케이블, Btype, DC차데모
+        public const string DEF_CHARGING_WEB_START = "S"; // 시작
+        public const string DEF_CHARGING_WEB_RIGHT = "R"; // 오른쪽 5핀 케이블, Ctype, AC3상
+ */
+        switch(str){
+            case "1" :  // AC3상
+                out = "01";
+                break;
+            case "L" :  // 왼쪽
+                out = "02";
+                break;
+            case "E" :  // 종료
+                out = "03";
+                break;
+            case "3" :  // DC combo
+                out = "04";
+                break;
+            case "I" :  // 즉시 종료
+                out = "05";
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        return out;
+    }
+
 //    private long getPayMount(boolean kt, byte[] payload) throws IllegalArgumentException{
 //        byte[] payAmount = new byte[10];
-//        int start = VD_LENGTH + CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH + CHARGING_AMOUNT_LENGTH + PAY_METHOD_LENGTH;
+//        int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH + CHARGING_AMOUNT_LENGTH + PAY_METHOD_LENGTH;
 //        if (kt == true) {
 //            for (int i = 0; i < 10; i++, start++) {
 //                payAmount[i] = payload[start];
@@ -186,7 +284,7 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
 
     private String getPayMount(boolean kt, byte[] payload) throws IllegalArgumentException{
         byte[] payAmount = new byte[10];
-        int start = VD_LENGTH + CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH + CHARGING_AMOUNT_LENGTH + PAY_METHOD_LENGTH;
+        int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH + PORT_LENGTH + CHARGING_TIME_LENGTH + CHARGING_AMOUNT_LENGTH + PAY_METHOD_LENGTH;
         if (kt == true) {
             for (int i = 0; i < 10; i++, start++) {
                 payAmount[i] = payload[start];
@@ -200,6 +298,21 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
         String str = new String(bytes);
         return Long.parseLong(str);
     }
+
+     private boolean isChargingStart(boolean kt, byte[] payload) {
+         int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH + DB_CODE_LENGTH;
+         byte[] plugType = new byte[1];
+         plugType[0] = payload[start];
+         String str = new String(plugType);
+
+         switch(str){
+             case "I" :  // 즉시중지
+             case "E" :  // 종료
+                return false;
+             default:
+                 return true;
+         }
+     }
 }
 
 
