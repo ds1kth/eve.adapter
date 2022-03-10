@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -27,12 +28,16 @@ public class MessageHandlerContext {
         this.serverUrl = serverUrl;
     }
 
-    static public ResponseEntity<String> sendRequest(Object body, String url, String cmd) {
-
+    /**
+     *
+     * @param body
+     * @param url
+     * @return
+     */
+    static private ResponseEntity<String> _sendRequest(Object body, String url) {
         String serialized = null;
 
         if(body != null){
-            log.info("["+ cmd + "][REQ] {}", body);
             try {
                 serialized = new ObjectMapper().writeValueAsString(body);
             } catch (JsonProcessingException e) {
@@ -54,15 +59,58 @@ public class MessageHandlerContext {
 //        ResponseEntity<String> response
 //                = restTemplate.postForEntity(url, serialized, String.class);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                url, //{요청할 서버 주소}
-                HttpMethod.POST, //{요청할 방식}
-                request, // {요청할 때 보낼 데이터}
-                String.class); //{요청시 반환되는 데이터 타입
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url, //{요청할 서버 주소}
+                    HttpMethod.POST, //{요청할 방식}
+                    request, // {요청할 때 보낼 데이터}
+                    String.class); //{요청시 반환되는 데이터 타입
+            return response;
+        }
+        catch (HttpClientErrorException e){
+            log.error("[Exception] {} {}", e.getStatusCode(), e.getResponseBodyAsString());
+        }
 
-        return response;
+        return null;
     }
 
+    /**
+     *
+     * @param body
+     * @param url
+     * @param cmd
+     * @return
+     */
+    static public ResponseEntity<String> sendRequest(Object body, String url, String cmd) {
+        log.info("[web("+ cmd + ")][REQ] Body : {}", body);
+
+        return _sendRequest(body, url);
+    }
+
+    /**
+     *
+     * @param body
+     * @param url
+     * @param cmd
+     * @param toCmd
+     * @return
+     */
+    static public ResponseEntity<String> sendRequest(Object body, String url, String cmd, String toCmd) {
+        if(toCmd != null) {
+            log.info("[web("+ cmd + ") to " + toCmd + "][REQ] Body : {}", body);
+        }
+        else {
+            log.info("[(web"+ cmd + ")][REQ] Body : {}", body);
+        }
+
+        return _sendRequest(body, url);
+    }
+
+    /**
+     *
+     * @param in
+     * @return
+     */
     public String makeUrl(String...in) {
         String out = serverUrl;
         for(String a:in)
