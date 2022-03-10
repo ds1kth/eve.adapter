@@ -6,11 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter @Builder @ToString
-public class Api_C1_Req {
-    String mbrCardNo;
-    String charge;  // current
-    String chargeTime;
+public class Api_C1_KT_Stop_Req {
+    String controlType;
     String paymentType;
-    String pay;
     String plugType;
 }
