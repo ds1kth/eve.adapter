@@ -23,7 +23,7 @@ public class Message_G1_Handler implements MessageHandler<MessageHandlerContext,
 
         String userType;
         String url = context.makeUrl("/downloadPriceInfo");
-        context.sendRequest(null, url);
+        context.sendRequest(null, url, context.getMessage().getCmd());
 
         return 0;
     }

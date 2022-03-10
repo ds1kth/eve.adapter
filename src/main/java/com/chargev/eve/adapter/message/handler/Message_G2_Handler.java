@@ -22,8 +22,8 @@ public class Message_G2_Handler {
 
         String userType = "11"; // 비회원 단가, 무조건
         String url = context.makeUrl("/downloadPriceInfo", "/", userType);
-        context.sendRequest(null, url);
-
+        context.sendRequest(null, url, context.getMessage().getCmd());
+        
         return 0;
     }
 }

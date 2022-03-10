@@ -31,7 +31,7 @@ public class Message_A1_Handler implements MessageHandler<MessageHandlerContext,
         soundSetByte[0] = payload[0];
         soundSetByte[1] = payload[1];
         String str = new String(soundSetByte);
-        System.out.println(str);
+        //System.out.println(str);
         int temp = Integer.parseInt(str);
         String soundSet = null;
 
@@ -56,7 +56,7 @@ public class Message_A1_Handler implements MessageHandler<MessageHandlerContext,
                 .chargeKwh("0")         // 무조건 0
                 .build();
 
-        context.sendRequest(req, url);
+        context.sendRequest(req, url, context.getMessage().getCmd());
         return 0;
     }
 

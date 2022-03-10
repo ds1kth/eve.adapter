@@ -4,15 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 
-@Getter @Setter
+@Getter @Setter @ToString @Slf4j
 public class MessageHandlerContext {
     private final Message message;
+    //private Message respMessage;
     private final String serverUrl;
     //private Object payloadObject;
     //private ValidInfo validInfo = new ValidInfo(true, "00");
@@ -24,11 +27,12 @@ public class MessageHandlerContext {
         this.serverUrl = serverUrl;
     }
 
-    static public ResponseEntity<String> sendRequest(Object body, String url) {
+    static public ResponseEntity<String> sendRequest(Object body, String url, String cmd) {
 
         String serialized = null;
 
         if(body != null){
+            log.info("["+ cmd + "][REQ] {}", body);
             try {
                 serialized = new ObjectMapper().writeValueAsString(body);
             } catch (JsonProcessingException e) {

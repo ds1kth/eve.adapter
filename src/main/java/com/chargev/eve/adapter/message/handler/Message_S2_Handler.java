@@ -15,7 +15,7 @@ public class Message_S2_Handler implements MessageHandler<MessageHandlerContext,
         log.debug("[S2] {}", context);
 
         String url = context.getServerUrl() + "/requestInstallInfo";
-        context.sendRequest(null, url);
+        context.sendRequest(null, url, context.getMessage().getCmd());
 
         return 0;
     }

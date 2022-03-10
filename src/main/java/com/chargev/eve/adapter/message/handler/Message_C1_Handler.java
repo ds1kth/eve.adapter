@@ -52,8 +52,8 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
                     .pay(getPayMount(kt, payload))
                     .plugType(getPlugType(kt, payload))
                     .build();
-            log.info("[C1][REQ] {}", req);
-            context.sendRequest(req, url);
+                    
+            context.sendRequest(req, url, context.getMessage().getCmd());
         }catch (IllegalArgumentException e) {
             // 인자가 맞지 않으면 api 를 호출하지 않는다.
             //e.printStackTrace();

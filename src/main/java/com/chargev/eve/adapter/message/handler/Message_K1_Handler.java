@@ -23,8 +23,7 @@ public class Message_K1_Handler implements MessageHandler<MessageHandlerContext,
         log.debug("[K1] {}", context);
 
         String url = context.getServerUrl() + "/UpdateFirmware";
-        context.sendRequest(null, url);
-
+        context.sendRequest(null, url, context.getMessage().getCmd());
         return 0;
     }
 }

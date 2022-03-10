@@ -53,8 +53,7 @@ public class Message_N1_Handler implements MessageHandler<MessageHandlerContext,
                 .infoValue(value)
                 .build();
 
-        log.info("[N1][REQ] {}", req);
-        context.sendRequest(req, url);
+        context.sendRequest(req, url, context.getMessage().getCmd());
 
         return 0;
     }

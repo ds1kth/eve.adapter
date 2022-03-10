@@ -40,8 +40,8 @@ public class Message_F1_Handler implements MessageHandler<MessageHandlerContext,
         Api_F1_Req req = Api_F1_Req.builder()
                 .location(firmwareUrl)
                 .build();
-        log.info("[F1][REQ] {}", req);
-        context.sendRequest(req, url);
+
+        context.sendRequest(req, url, context.getMessage().getCmd());
         return 0;
     }
 }

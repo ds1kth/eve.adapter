@@ -65,8 +65,7 @@ public class Message_B1_Handler implements MessageHandler<MessageHandlerContext,
                 .chargeKwh("0")   // 무조건 0
                 .build();
 
-        log.info("[B1][REQ] {}", req);
-        context.sendRequest(req, url);
+        context.sendRequest(req, url, context.getMessage().getCmd());
 
         return 0;
     }

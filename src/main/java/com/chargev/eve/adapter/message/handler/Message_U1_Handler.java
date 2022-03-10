@@ -24,7 +24,7 @@ public class Message_U1_Handler implements MessageHandler<MessageHandlerContext,
 
         String url = context.makeUrl("/requestInstallInfo");
 
-        context.sendRequest(null, url);
+        context.sendRequest(null, url, context.getMessage().getCmd());
 
         return 0;
     }
