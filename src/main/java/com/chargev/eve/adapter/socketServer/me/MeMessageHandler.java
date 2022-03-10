@@ -46,13 +46,15 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
         String cmd = MeMessageDecoder.parseCmd(msgBuf);
 
         cmd = meMessagePreProcessor.process(cmd);
+        int payloadLength = MeMessageDecoder.getPayloadLength(msgBuf);
 
         String beanName = "Message_" + cmd + "_Handler";
 
         MessageHandler handler = AppContext.getBean(beanName, MessageHandler.class);
         Message message = Message.builder()
                 .chargerId(MeMessageDecoder.parseChargerId(msgBuf))
-                .payload(MeMessageDecoder.parsePayload(msgBuf, msgBuf.length))
+                .payload(MeMessageDecoder.parsePayload(msgBuf, payloadLength))
+                .payloadLength(payloadLength)
                 .cmd(cmd).build();
 
         String serverDomain = "http://"

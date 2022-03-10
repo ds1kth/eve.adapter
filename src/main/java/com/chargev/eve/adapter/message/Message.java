@@ -11,5 +11,6 @@ public class Message {
     //String stationId;
     String chargerId;   // stationId + chargerId = 10bytes
     String cmd;
+    int payloadLength;
     String payload;
 }

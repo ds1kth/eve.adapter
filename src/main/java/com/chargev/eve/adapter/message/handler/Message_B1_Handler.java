@@ -24,9 +24,7 @@ public class Message_B1_Handler implements MessageHandler<MessageHandlerContext,
         log.debug("[B1] {}", context);
         String url = context.makeUrl("/requestModeChange");
         byte[] payload = context.getMessage().getPayload().getBytes();
-//        byte[] ML = new byte[2];
-//        ML[0] = payload[0];
-        byte modeByte = payload[2];
+        byte modeByte = payload[0];
         String mode = null;
 
         String str = new String(payload);

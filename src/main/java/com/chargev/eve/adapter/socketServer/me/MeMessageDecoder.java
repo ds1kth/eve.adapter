@@ -1,5 +1,6 @@
 package com.chargev.eve.adapter.socketServer.me;
 
+import com.chargev.eve.adapter.message.HexUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -13,10 +14,12 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
     private static final Logger logger = LoggerFactory.getLogger(MeMessageDecoder.class);
     private static final byte STX = 'S';
     private static final byte ETX = 'E';
-    private static final short HEADER_PLUS_ETX_LENGTH = 28; // STX + DATE + station_id + charger_id + cmd + ETX;
+    private static final short HEADER_LENGTH = 29; // STX + DATE + station_id + charger_id + cmd + ML(2BYTES);
     private static final byte CHARER_ID_POS = 15;
     private static final byte CMD_POS = 25;
-    private static final byte PAYLOAD_POS = 27;
+    private static final byte PAYLOAD_POS = 29;
+    private static final short MAX_BODY_LENGTH = 5000;
+    private static final short FOOTER_LENGTH = 1; /*ETX*/
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, ByteBuf msgBuf, List<Object> out) {
@@ -26,39 +29,72 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
         logger.debug("decode : {} : readableBytes={}", ctx.channel().remoteAddress(), readableBytes);
 
         // 수신 데이터 길이가 헤더 길이보다 작으면 리턴하여 더 기다린다.
-        if (readableBytes < HEADER_PLUS_ETX_LENGTH) {
+        if (readableBytes < HEADER_LENGTH) {
             return;
         }
 
         byte[] data;
-        data = new byte[readableBytes];
-        msgBuf.readBytes(data);
-        String str1 = new String(data);
-
-        //System.out.println(str1);
 
         // 시작 바이트(STX) 체크, 오류시 버퍼의 데이터를 읽은 뒤 버린다.
         if (msgBuf.getByte(0) != STX) {
-            logger.error("decode : {} : STX Error: Discard data : {}", 
-                    ctx.channel().remoteAddress(), str1);
+            data = new byte[readableBytes];
+            msgBuf.readBytes(data);
+            String hexMsg = HexUtils.toHex(data);
+            logger.error("decode : {} : STX Error: Discard data : {}", ctx.channel().remoteAddress(), hexMsg);
+            return;
+        }
+
+        // 헤더의 맨 마지막에 있는 바디길이 필드에서 바디 길이를 구한다.
+        byte ML[] = new byte[2];
+        ML[0] = msgBuf.getByte(HEADER_LENGTH - 2);  // not increase index
+        ML[1] = msgBuf.getByte(HEADER_LENGTH - 1);  // not increase index
+        String temp = new String(ML);
+        temp = temp.trim();
+        int bodyLength = Integer.parseInt(temp);
+
+        logger.debug("decode : {} : headerLength={}, bodyLength={}", ctx.channel().remoteAddress(),
+                HEADER_LENGTH, bodyLength);
+
+        // 구한 바디 길이가 허용된 범위를 벗어나면 버퍼의 데이터를 읽은 뒤 버린다.
+        if (bodyLength < 0 || bodyLength > MAX_BODY_LENGTH) {
+            data = new byte[readableBytes];
+            msgBuf.readBytes(data);
+            String hexMsg = HexUtils.toHex(data);
+            logger.error("decode : {} : Wrong body length {}: Discard data : {}",
+                    ctx.channel().remoteAddress(),
+                    bodyLength,
+                    hexMsg);
+            return;
+        }
+
+        // 메시지 전체 길이를 계산한다.
+        int wholeLength = HEADER_LENGTH + bodyLength + FOOTER_LENGTH;
+
+        // 수신 메시지 길이가 미달이면 리턴하여 더 기다린다.
+        if(readableBytes < wholeLength) {
             return;
         }
 
         // 종료 바이트(ETX) 체크. 오류시 버퍼의 데이터를 읽은 뒤 버린다.
         if (msgBuf.getByte(readableBytes - 1) != ETX) {
+            data = new byte[readableBytes];
+            msgBuf.readBytes(data);
+            String hexMsg = HexUtils.toHex(data);
             logger.error("decode : {} : ETX Error: Discard data : {}",
                     ctx.channel().remoteAddress(),
-                    str1);
+                    hexMsg);
             return;
         }
-        
+
+        int i;
+        byte[] dataFull = new byte[wholeLength];
+        msgBuf.readBytes(dataFull);
+        String str1 = new String(dataFull);
+
         // date 확인
 
-
         // cmd 확인
-        //String cmd = parseCmd(msgBuf);
-        String cmd = parseCmd(data);
-
+        String cmd = parseCmd(dataFull);
         if(isCmdValid(cmd) == false){
             logger.error("decode : {} : messageId Error: Discard data : {}",
                     ctx.channel().remoteAddress(),
@@ -67,7 +103,7 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
         }
 
         // 전부다 넘김
-        out.add(data);
+        out.add(dataFull);
     }
 
     public static boolean isCmdValid(String cmd){
@@ -118,14 +154,7 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
         return new String(chargerIdBuf);
     }
 
-    /**
-     * 
-     * @param dataByte
-     * @param dataSize : 헤더 + payload + etx 사이즈
-     * @return
-     */
-    public static String parsePayload(byte[] dataByte, int dataSize) {
-        int payloadLength = dataSize - (PAYLOAD_POS + 1);
+    public static String parsePayload(byte[] dataByte, int payloadLength) {        
         byte[] chargerIdBuf;
         chargerIdBuf = new byte[payloadLength];
 
@@ -133,5 +162,15 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             chargerIdBuf[i] = dataByte[PAYLOAD_POS + i];
         }
         return new String(chargerIdBuf);
+    }
+
+    public static int getPayloadLength(byte[] data) {
+        byte[] ML = new byte[2];
+        ML[0] = data[HEADER_LENGTH - 2];
+        ML[1] = data[HEADER_LENGTH - 1];
+        String temp = new String(ML);
+        temp = temp.trim();
+        int bodyLength = Integer.parseInt(temp);        
+        return bodyLength;
     }
 }

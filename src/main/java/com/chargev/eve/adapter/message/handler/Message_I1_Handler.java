@@ -24,13 +24,7 @@ public class Message_I1_Handler implements MessageHandler<MessageHandlerContext,
         log.debug("[I1] {}", context);
 
         byte[] payload = context.getMessage().getPayload().getBytes();
-        byte[] vdLength = new byte[RESET_TYPE_LENGTH];
-        vdLength[0] = payload[0];
-        vdLength[1] = payload[1];
-
-        String str = new String(vdLength);
-        str = str.trim();
-        int intVD = Integer.parseInt(str);
+        int intVD = context.getMessage().getPayloadLength();
         String resetType = null;
 
         if (intVD > 0)

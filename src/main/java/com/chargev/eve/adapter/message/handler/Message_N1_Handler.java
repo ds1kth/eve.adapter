@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 @Service("Message_N1_Handler")
 public class Message_N1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
 
-    private final int VD_LENGTH = 2;
     private final int ML_LENGTH = 2;
     public Integer serve(MessageHandlerContext context) {
         log.debug("[N1] {}", context);
@@ -29,7 +28,7 @@ public class Message_N1_Handler implements MessageHandler<MessageHandlerContext,
 
         byte[] payload = context.getMessage().getPayload().getBytes();
         byte[] keyTemp = new byte[2];
-        int pos = VD_LENGTH;
+        int pos = 0;
         keyTemp[0] = payload[pos++];
         keyTemp[1] = payload[pos++];
 
