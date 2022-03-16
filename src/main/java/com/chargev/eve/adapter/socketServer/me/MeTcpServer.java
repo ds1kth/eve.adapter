@@ -63,7 +63,7 @@ public final class MeTcpServer implements Runnable {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ChannelPipeline p = ch.pipeline();
-                            p.addLast(new MeMessageDecoder(), new MeTcpServerInitializer(channelInboundHandler));
+                            p.addLast(new MeMessageDecoder(), new MeMessageEncoder(), new MeTcpServerInitializer(channelInboundHandler));
                             //p.addLast(new MeMessageDecoder(), new TestHandler());
                             //p.addLast(new TestHandler(), new MeMessageDecoder());
                             //p.addLast(new MeMessageDecoder());

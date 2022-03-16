@@ -16,10 +16,12 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
     private static final byte ETX = 'E';
     private static final short HEADER_LENGTH = 29; // STX + DATE + station_id + charger_id + cmd + ML(2BYTES);
     private static final byte CHARER_ID_POS = 15;
+    private static final byte DATE_POS = 1;
     private static final byte CMD_POS = 25;
     private static final byte PAYLOAD_POS = 29;
     private static final short MAX_BODY_LENGTH = 5000;
     private static final short FOOTER_LENGTH = 1; /*ETX*/
+    private static final int DATE_LENGTH = 14;
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, ByteBuf msgBuf, List<Object> out) {
@@ -96,6 +98,9 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
         // cmd 확인
         String cmd = parseCmd(dataFull);
         if(isCmdValid(cmd) == false){
+            data = new byte[readableBytes];
+            msgBuf.readBytes(data);
+            String hexMsg = HexUtils.toHex(data);
             logger.error("decode : {} : messageId Error: Discard data : {}",
                     ctx.channel().remoteAddress(),
                     str1);
@@ -127,6 +132,15 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             default :
                 return false;
         }
+    }
+
+    public static String parseDate(byte[] dataByte) {
+        byte[] dateBuf;
+        dateBuf = new byte[DATE_LENGTH];
+        for(int i=0; i<DATE_LENGTH; i++){
+            dateBuf[i] = dataByte[DATE_POS + i];
+        }
+        return new String(dateBuf);
     }
 
     public static String parseCmd(ByteBuf msgBuf) {

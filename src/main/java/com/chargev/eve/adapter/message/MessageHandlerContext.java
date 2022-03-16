@@ -15,9 +15,11 @@ import java.util.Collections;
 
 @Getter @Setter @ToString @Slf4j
 public class MessageHandlerContext {
-    private final Message message;
+    private final Message message;    
     //private Message respMessage;
-    private final String serverUrl;
+    private final String serverUrl;    
+    //private String respMessage; // INS + ML + VD
+    private RespMessage respMessage;
     //private Object payloadObject;
     //private ValidInfo validInfo = new ValidInfo(true, "00");
     //private Message response;
@@ -66,9 +68,9 @@ public class MessageHandlerContext {
                     request, // {요청할 때 보낼 데이터}
                     String.class); //{요청시 반환되는 데이터 타입
             return response;
-        }
-        catch (HttpClientErrorException e){
-            log.error("[Exception] {} {}", e.getStatusCode(), e.getResponseBodyAsString());
+        }        
+        catch (Exception e){        
+            log.error("[Exception] {} {}", e.getMessage());
         }
 
         return null;
