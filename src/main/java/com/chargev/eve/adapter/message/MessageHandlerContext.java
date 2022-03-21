@@ -37,6 +37,8 @@ public class MessageHandlerContext {
      * @return
      */
     static private ResponseEntity<String> _sendRequest(Object body, String url) {
+        log.info("[uri] : {}", url);
+
         String serialized = null;
 
         if(body != null){

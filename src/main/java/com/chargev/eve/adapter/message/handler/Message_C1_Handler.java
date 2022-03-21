@@ -5,6 +5,7 @@ import com.chargev.eve.adapter.apiClient.api.Api_C1_ChargEV_Req;
 import com.chargev.eve.adapter.apiClient.api.Api_C1_KT_Start_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import com.chargev.eve.adapter.message.RespMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -60,8 +61,17 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
         }
         catch (Exception e){
             log.error("[Exception] {}", e.getStackTrace()[0]);
+            return 0;
         }
-        return 0;
+
+        context.setRespMessage(null);
+        RespMessage respMessage = RespMessage.builder()
+                .INS("1C")
+                .ML("5")
+                .VD("S    ")
+                .build();
+        context.setRespMessage(respMessage);
+        return 1;
     }
 
     /**
@@ -117,7 +127,7 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
         url = context.makeUrl("/requestChargingStartAndStop");
         req = Api_C1_ChargEV_Req.builder()
                 .mbrCardNo(getCardnubmer(kt, payload))
-                //.tid(getPayMethod(kt, payload))   // 주문 번호?
+                .tid(getTid(kt, payload))   // DB 고유정보 코드
                 .chargingCommand(getChargingCommand(kt, payload))
                 .chargedTime(getChargingTime(kt, payload))
                 .build();
@@ -206,27 +216,21 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
         public const string DEF_CHARGING_WEB_RIGHT = "R"; // 오른쪽 5핀 케이블, Ctype, AC3상
  */
         switch(str){
-            case "1" :  // ac 급속
-                out = "01";
-                break;
-            case "2" :  // AC완속
-                out = "02";
-                break;
-            case "4" :  // AC3상
+            // 확인 필요
+            case "1" :  // AC3상
                 out = "04";
                 break;
-            case "5" :  // DC 콤보
+            case "2" :  // DC차데모
+                out = "01";
+                break;
+            case "3" :  // DC 콤보
                 out = "05";
                 break;
-//            case "L" :  // 차데모 급속
-//                out = "05";
-//                break;
-//            case "S" :  // 차데모 급속
-//                out = "01";
-//                break;
-//            case "R" :  // 차데모 급속
-//                out = "01";
-//                break;
+            case "L" :  // AC완속
+            case "S" :  // AC완속
+            case "R" :  // AC완속
+                out = "02";
+                break;
             default:
                 throw new IllegalArgumentException();
         }
@@ -312,6 +316,18 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
              default:
                  return true;
          }
+     }
+
+     private String getTid(boolean kt, byte[] payload) throws IllegalArgumentException{
+         byte[] temp = new byte[16];
+         int start = CARD_NUMBER_LENGTH + CHARGING_TIME_LENGTH;
+
+         for (int i = 0; i < 16; i++, start++) {
+             temp[i] = payload[start];
+         }
+
+         String tid = new String(temp);
+         return tid;
      }
 }
 

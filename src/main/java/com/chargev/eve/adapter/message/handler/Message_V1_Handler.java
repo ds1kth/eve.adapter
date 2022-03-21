@@ -3,6 +3,7 @@ package com.chargev.eve.adapter.message.handler;
 import com.chargev.eve.adapter.apiClient.api.Api_B1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import com.chargev.eve.adapter.message.RespMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,14 @@ public class Message_V1_Handler implements MessageHandler<MessageHandlerContext,
                 .build();
 
         context.sendRequest(req, url, context.getMessage().getCmd());
-        return 0;
+
+        RespMessage respMessage = RespMessage.builder()
+                .INS("1V")
+                .ML("5")
+                .VD("S    ")
+                .build();
+        context.setRespMessage(respMessage);
+        return 1;
     }
 }
 

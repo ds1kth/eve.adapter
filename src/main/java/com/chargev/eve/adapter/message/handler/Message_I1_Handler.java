@@ -2,6 +2,7 @@ package com.chargev.eve.adapter.message.handler;
 
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import com.chargev.eve.adapter.message.RespMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service("Message_I1_Handler")
 public class Message_I1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
-    private final int RESET_TYPE_LENGTH = 2;
     public Integer serve(MessageHandlerContext context) {
         log.debug("[I1] {}", context);
 
@@ -30,7 +30,7 @@ public class Message_I1_Handler implements MessageHandler<MessageHandlerContext,
         if (intVD > 0)
         {
             byte[] temp = new byte[1];
-            temp[0] = payload[RESET_TYPE_LENGTH]; // 리셋 대상자
+            temp[0] = payload[0]; // 리셋 대상자
 
             resetType = new String(temp);
         }
@@ -53,7 +53,19 @@ public class Message_I1_Handler implements MessageHandler<MessageHandlerContext,
         String url = context.makeUrl("/reset", "/0", resetType);
         context.sendRequest(null, url, context.getMessage().getCmd());
 
-        return 0;
+//        RespMessage respMessage = RespMessage.builder()
+//                .INS("1I")
+//                .ML("5")
+//                .VD("E0008")    // 충전기가 연결되어 있지 않음
+//                .build();
+
+        RespMessage respMessage = RespMessage.builder()
+                .INS("1I")
+                .ML("5")
+                .VD("S    ")
+                .build();
+        context.setRespMessage(respMessage);
+        return 1;
     }
 }
 

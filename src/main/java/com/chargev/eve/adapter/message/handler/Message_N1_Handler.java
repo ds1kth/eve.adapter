@@ -3,8 +3,11 @@ package com.chargev.eve.adapter.message.handler;
 import com.chargev.eve.adapter.apiClient.api.Api_N1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import com.chargev.eve.adapter.message.RespMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * API: 3.13 RequestInfoChange
@@ -26,20 +29,21 @@ public class Message_N1_Handler implements MessageHandler<MessageHandlerContext,
 
         String url = context.makeUrl("/requestInfoChange");
 
+        int valueLength = context.getMessage().getPayloadLength() - 2;
         byte[] payload = context.getMessage().getPayload().getBytes();
         byte[] keyTemp = new byte[2];
         int pos = 0;
         keyTemp[0] = payload[pos++];
         keyTemp[1] = payload[pos++];
 
-        byte[] valueTemp = new byte[30];
+        byte[] valueTemp = new byte[valueLength];
 
-        for(int i = 0; i<30; i++) {
+        for(int i = 0; i<valueLength; i++) {
             valueTemp[i] = payload[pos++];
         }
 
         String key = new String(keyTemp);
-        String value = new String(valueTemp);
+        String value = new String(valueTemp, StandardCharsets.UTF_8);
 
         int keyInt = Integer.parseInt(key);
         if(keyInt > 10)
@@ -54,6 +58,12 @@ public class Message_N1_Handler implements MessageHandler<MessageHandlerContext,
 
         context.sendRequest(req, url, context.getMessage().getCmd());
 
-        return 0;
+        RespMessage respMessage = RespMessage.builder()
+                .INS("1N")
+                .ML("5")
+                .VD("S    ")
+                .build();
+        context.setRespMessage(respMessage);
+        return 1;
     }
 }

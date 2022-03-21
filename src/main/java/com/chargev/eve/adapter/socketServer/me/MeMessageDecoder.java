@@ -107,6 +107,8 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             return;
         }
 
+        String msg = new String(dataFull);
+        logger.info("received packet : {}", msg);
         // 전부다 넘김
         out.add(dataFull);
     }
@@ -120,6 +122,7 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             case "C1": // 중계서버 충전시작, 충전중단
             case "F1": // 펌웨어 업데이트
             case "G1":
+            case "G2":
             case "I1": // 소프트 리셋 전문 발송
             case "K1": // 예약전문, 예약취소
             case "N1":

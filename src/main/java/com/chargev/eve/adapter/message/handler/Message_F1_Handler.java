@@ -3,6 +3,7 @@ package com.chargev.eve.adapter.message.handler;
 import com.chargev.eve.adapter.apiClient.api.Api_F1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import com.chargev.eve.adapter.message.RespMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,14 @@ public class Message_F1_Handler implements MessageHandler<MessageHandlerContext,
                 .build();
 
         context.sendRequest(req, url, context.getMessage().getCmd());
-        return 0;
+
+        // NAK 전송?
+        RespMessage respMessage = RespMessage.builder()
+                .INS("1F")
+                .ML("5")
+                .VD("E0006")
+                .build();
+        context.setRespMessage(respMessage);
+        return 1;
     }
 }

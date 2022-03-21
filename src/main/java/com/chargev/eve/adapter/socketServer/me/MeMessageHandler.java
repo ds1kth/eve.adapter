@@ -97,13 +97,13 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx){        
-        // logger.info("channelReadComplete");    
+        logger.info("channelReadComplete");
         ctx.flush();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        // logger.info("exceptionCaught");
+        logger.info("exceptionCaught");
         closeOnFlush(ctx.channel());
     }
 
@@ -112,8 +112,8 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
      */
     private static void closeOnFlush(Channel ch) {
         System.out.println("closeOnFlush");
-        // if (ch.isActive()) {
-        //     ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-        // }
+         if (ch.isActive()) {
+             ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+         }
     }
 }

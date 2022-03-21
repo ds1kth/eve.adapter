@@ -3,6 +3,7 @@ package com.chargev.eve.adapter.message.handler;
 import com.chargev.eve.adapter.apiClient.api.Api_B1_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
+import com.chargev.eve.adapter.message.RespMessage;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,38 +27,39 @@ public class Message_A1_Handler implements MessageHandler<MessageHandlerContext,
         String url = context.makeUrl("/requestModeChange");
 
         byte[] payload = context.getMessage().getPayload().getBytes();
-        byte[] soundSetByte = new byte[2];
+        int ml = context.getMessage().getPayloadLength();
+        byte[] ampereByte = new byte[ml];
+        for(int i=0; i<ml; i++){
+            ampereByte[i] = payload[i];
+        }
 
-        soundSetByte[0] = payload[0];
-        soundSetByte[1] = payload[1];
-        String str = new String(soundSetByte);
-        //System.out.println(str);
-        int temp = Integer.parseInt(str);
-        String soundSet = null;
+        String ampere = new String(ampereByte);
 
-        if(temp > 0xFF) {
+        try {
+            Integer ampereInt = Integer.parseInt(ampere);
+        } catch (NumberFormatException e) {
+            log.error("[Exception] {}", e.getStackTrace()[0]);
             return 0;
-        }
-        else if(temp < 0x10) {
-            soundSet = "FFFF01" + "0" + Integer.toHexString(temp).toUpperCase();
-        }
-        else {
-            soundSet = "FFFF01" + Integer.toHexString(temp).toUpperCase();
         }
 
         String mode = "0001"; // 충전기 운영
-
         Api_B1_Req req = null;
 
         req = Api_B1_Req.builder()
                 .mode(mode)
                 .modeType("02")         // 충전기 충전량 변경
                 .soundSet("FFFFFFFF")   // 쓰레기값
-                .chargeKwh("0")         // 무조건 0
+                .chargeKwh(ampere)
                 .build();
 
         context.sendRequest(req, url, context.getMessage().getCmd());
-        return 0;
-    }
 
+        RespMessage respMessage = RespMessage.builder()
+                .INS("1A")
+                .ML("5")
+                .VD("S    ")
+                .build();
+        context.setRespMessage(respMessage);
+        return 1;
+    }
 }
