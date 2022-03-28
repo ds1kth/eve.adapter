@@ -2,7 +2,7 @@ server.port : 8081
 
 socketServer:
   address: 127.0.0.1
-  port: 8088
+  port: 8005
 apiServer:
   address: 127.0.0.1
   port: 8080
