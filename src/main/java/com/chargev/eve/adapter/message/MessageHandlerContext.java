@@ -48,6 +48,7 @@ public class MessageHandlerContext {
                 e.printStackTrace();
             }
         }
+        log.info("[json] : {}", serialized);
 
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(3 * 1000);

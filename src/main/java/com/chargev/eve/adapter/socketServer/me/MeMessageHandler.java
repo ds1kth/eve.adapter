@@ -51,13 +51,17 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
 
         cmd = meMessagePreProcessor.process(cmd);
         int payloadLength = MeMessageDecoder.getPayloadLength(msgBuf);
+        int readPayloadLength = payloadLength;
+        if(payloadLength == 99 && (cmd.equals("S3") || cmd.equals("S4"))) {
+            readPayloadLength = 224;
+        }
 
         String beanName = "Message_" + cmd + "_Handler";
 
         MessageHandler handler = AppContext.getBean(beanName, MessageHandler.class);
         Message message = Message.builder()
                 .chargerId(chargeId)
-                .payload(MeMessageDecoder.parsePayload(msgBuf, payloadLength))
+                .payload(MeMessageDecoder.parsePayload(msgBuf, readPayloadLength))
                 .payloadLength(payloadLength)
                 .cmd(cmd).build();
 
@@ -97,13 +101,13 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx){        
-        logger.info("channelReadComplete");
+        //logger.info("channelReadComplete");
         ctx.flush();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        logger.info("exceptionCaught");
+        //logger.info("exceptionCaught");
         closeOnFlush(ctx.channel());
     }
 
@@ -111,7 +115,7 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
      * Closes the specified channel after all queued write requests are flushed.
      */
     private static void closeOnFlush(Channel ch) {
-        System.out.println("closeOnFlush");
+        //System.out.println("closeOnFlush");
          if (ch.isActive()) {
              ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
          }

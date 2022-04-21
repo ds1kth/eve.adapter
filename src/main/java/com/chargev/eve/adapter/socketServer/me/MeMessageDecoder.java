@@ -69,6 +69,24 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             return;
         }
 
+        if(bodyLength == 99) {
+            byte tempCmd[] = new byte[2];
+            tempCmd[0] = msgBuf.getByte(CMD_POS);
+            tempCmd[1] = msgBuf.getByte(CMD_POS + 1);
+            String cmd = new String(tempCmd);
+
+            if(cmd.equals("S3") || cmd.equals("S4")){ // S3, S4 전문에만 해당
+                byte tempRealML[] = new byte[3];
+                tempRealML[0] = msgBuf.getByte(HEADER_LENGTH);
+                tempRealML[1] = msgBuf.getByte(HEADER_LENGTH + 1);
+                tempRealML[2] = msgBuf.getByte(HEADER_LENGTH + 2);
+                temp = new String(tempRealML);
+                temp = temp.trim();
+                bodyLength = Integer.parseInt(temp);
+                bodyLength += 3; // realML
+            }
+        }
+
         // 메시지 전체 길이를 계산한다.
         int wholeLength = HEADER_LENGTH + bodyLength + FOOTER_LENGTH;
 
@@ -121,6 +139,8 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             case "B1": // 충전기 점검, 충전기 운영, 운영중지 전문 발송, 점검중 전문 발송, TEST 전문 발송
             case "C1": // 중계서버 충전시작, 충전중단
             case "F1": // 펌웨어 업데이트
+            case "S3":
+            case "S4":
             case "G1":
             case "G2":
             case "I1": // 소프트 리셋 전문 발송
