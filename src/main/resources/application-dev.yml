@@ -4,7 +4,7 @@ socketServer:
   address: 127.0.0.1
   port: 8005
 apiServer:
-  address: 211.252.81.169
+  address: 127.0.0.1
   port: 8082
 bizServer:
   address: 127.0.0.1
