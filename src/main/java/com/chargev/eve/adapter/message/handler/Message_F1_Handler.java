@@ -24,15 +24,24 @@ import java.net.URISyntaxException;
 @Slf4j
 @Service("Message_F1_Handler")
 public class Message_F1_Handler implements MessageHandler<MessageHandlerContext, Integer> {
+    private final int _firmware_idx_size = 20;
+
     public Integer serve(MessageHandlerContext context) {
         log.debug("[F1] {}", context);
-
         String url = context.makeUrl("/UpdateFirmware");
-        //context.sendRequest(null, url);
+
+        byte[] payload = context.getMessage().getPayload().getBytes();
+        byte[] _firmware_idx = new byte[_firmware_idx_size];
+        int pos = 0;
+        for(int i = 0; i<_firmware_idx_size; i++) {
+            _firmware_idx[i] = payload[pos++];
+        }
+        String uriStr = new String(_firmware_idx);
 
         URI firmwareUrl = null;
+
         try {
-            firmwareUrl = new URI("www.naver.com");
+            firmwareUrl = new URI(uriStr);
         } catch (URISyntaxException e) {
             //e.printStackTrace();
             log.error("[Exception] {}", e.getStackTrace()[0]);

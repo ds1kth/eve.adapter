@@ -10,4 +10,7 @@ import java.net.URI;
 @Getter @Setter @Builder @ToString
 public class Api_F1_Req {
     private URI location;
+    private String retries;
+    private String retrieveDate;
+    private String retryInterval;
 }
