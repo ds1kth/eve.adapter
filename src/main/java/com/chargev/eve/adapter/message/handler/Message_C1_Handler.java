@@ -1,8 +1,8 @@
 
 package com.chargev.eve.adapter.message.handler;
 
-import com.chargev.eve.adapter.apiClient.api.Api_C1_ChargEV_Req;
-import com.chargev.eve.adapter.apiClient.api.Api_C1_KT_Start_Req;
+import com.chargev.eve.adapter.apiClient.api.Api_C1_Common_Start_Req;
+import com.chargev.eve.adapter.apiClient.api.Api_C1_Common_Stop_Req;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
 import com.chargev.eve.adapter.message.RespMessage;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
  * API:
  *
  * KT -
- *   3.24 RequestChargingStart
+ *   3.27 RequestChargingStart
  *   충전기가 충전을 시작하도록 제어 명령을 전달 한다.
- *   3.25 RequestChargeStop
+ *   3.28 RequestChargeStop
  *   충전기가 후불 결제를 진행하도록 제어 명령 전달한다.
  *
  * Chargev -
@@ -85,32 +85,24 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
         boolean kt = true;
 
         if(isChargingStart(kt, payload) == true) {
-            Api_C1_KT_Start_Req req = null;
-            url = context.makeUrl("/requestChargingStart");
-            req = Api_C1_KT_Start_Req.builder()
+            Api_C1_Common_Start_Req req = null;
+            url = context.makeUrl("/startCharge");
+            req = Api_C1_Common_Start_Req.builder()
                     .mbrCardNo(getCardnubmer(kt, payload))
-                    .charge(getCurrent(kt, payload))
+                    .chargeReqAmount(getCurrent(kt, payload))
                     .chargeTime(getChargingTime(kt, payload))
-                    .paymentType(getPayMethod(kt, payload))
-                    .pay(getPayMount(kt, payload))
-                    .plugType(getPlugType(kt, payload))
+                    .payMethod(getPayMethod(kt, payload))
+                    .chargePrice(getPayMount(kt, payload))
+                    .chargerType(getPlugType(kt, payload))
                     .build();
             context.sendRequest(req, url, context.getMessage().getCmd(), "KT(B2)");
         }
-//        else {
-//            Api_C1_Stop_Req req = null;
-//            url = context.makeUrl("/requestChargingStop");
-//
-//            if(kt == true) {
-//                req = Api_C1_Stop_Req.builder()
-//                        .controlType("01")  // KT 규격서
-//                        .paymentType("00")  // KT 규격서
-//                        .plugType("02")     // 0x02 : AC 완속, KT 중계기 소스를 보면 무조건 02 임
-//                        .build();
-//            }
-//
-//            context.sendRequest(req, url, context.getMessage().getCmd());
-//        }
+        else {
+            Api_C1_Common_Stop_Req req = null;
+            url = context.makeUrl("/stopCharge");
+            req = commonChargeStop(kt, payload);
+            context.sendRequest(req, url, context.getMessage().getCmd(), "KT(E2)");
+        }
     }
 
     /**
@@ -122,16 +114,37 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
     void processChargEV(MessageHandlerContext context, byte[] payload) throws Exception {
         String url = null;
         boolean kt = false;
-        Api_C1_ChargEV_Req req = null;
 
-        url = context.makeUrl("/requestChargingStartAndStop");
-        req = Api_C1_ChargEV_Req.builder()
+        if(isChargingStart(kt, payload) == true) {
+            Api_C1_Common_Start_Req req = null;
+            url = context.makeUrl("/startCharge");
+            req = Api_C1_Common_Start_Req.builder()
+                    .mbrCardNo(getCardnubmer(kt, payload))
+                    .tid(getTid(kt, payload))   // DB 고유정보 코드
+                    .chargingCommand(getChargingCommand(kt, payload))
+                    .chargeTime(getChargingTime(kt, payload))
+                    .build();
+            context.sendRequest(req, url, context.getMessage().getCmd(), "ChargEV(Q1)");
+        }
+        else {
+            Api_C1_Common_Stop_Req req = null;
+            url = context.makeUrl("/stopCharge");
+            req = commonChargeStop(kt, payload);
+            context.sendRequest(req, url, context.getMessage().getCmd(), "ChargEV(Q1)");
+        }
+    }
+
+    private Api_C1_Common_Stop_Req commonChargeStop(boolean kt, byte[] payload) {
+        Api_C1_Common_Stop_Req req = null;
+        req = Api_C1_Common_Stop_Req.builder()
                 .mbrCardNo(getCardnubmer(kt, payload))
+                .chargeTime(getChargingTime(kt, payload))
                 .tid(getTid(kt, payload))   // DB 고유정보 코드
+                .payMethod("00")
                 .chargingCommand(getChargingCommand(kt, payload))
-                .chargedTime(getChargingTime(kt, payload))
                 .build();
-        context.sendRequest(req, url, context.getMessage().getCmd(), "ChargEV(Q1)");
+
+        return req;
     }
 
     private long getVd(byte[] payload) throws IllegalArgumentException {
@@ -255,20 +268,23 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
  */
         switch(str){
             case "1" :  // AC3상
+            case "S" :  // AC완속
+            case "R" :  // AC완속
                 out = "01";
                 break;
+            case "2" :  // DC차데모
             case "L" :  // 왼쪽
                 out = "02";
-                break;
-            case "E" :  // 종료
-                out = "03";
-                break;
+                break;            
             case "3" :  // DC combo
                 out = "04";
                 break;
-            case "I" :  // 즉시 종료
-                out = "05";
+            case "E" :  // 종료
+                out = "E";
                 break;
+            case "I" :  // 즉시 종료
+                out = "I";
+                break;                    
             default:
                 throw new IllegalArgumentException();
         }
