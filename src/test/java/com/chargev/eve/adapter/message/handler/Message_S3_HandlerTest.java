@@ -1,5 +1,6 @@
 package com.chargev.eve.adapter.message.handler;
 
+import com.chargev.eve.adapter.apiClient.api.Api_S3_Req;
 import com.chargev.eve.adapter.message.Message;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
 import org.junit.jupiter.api.Test;
@@ -12,16 +13,34 @@ class Message_S3_HandlerTest {
     Message_S3_Handler handler = new Message_S3_Handler();
 
     @Test
-    void S3전문검증_성공케이스_ml사이즈_21(){
-        Message message = Message.builder()
-                .chargerId("3100012111")
-                .payload("S1234567890!@#$%^&*()|")
-                .payloadLength(21)
-                .cmd("S3").build();
+    void test1() {
+        String input = "a/b/c/d/e";
+        int ret = input.lastIndexOf("/");
+        assertEquals(7, ret);
+    }
 
-        MessageHandlerContext context = new MessageHandlerContext(message, "192.168.0.1");
-        int ret = handler.serve(context);
+    @Test
+    void S3전문검증_성공케이스_ml사이즈_99(){
+       Message message = Message.builder()
+               .chargerId("3100012111")
+               .payload("205S101Ywww.naver.com/parkjunoh/test/firware.bin--------------------------------------------------------------------------------------------------------------fileVersion1234567890abcdefghijkmlnolprstuvwxyz!@#")
+               .payloadLength(208)
+               .cmd("S3").build();
 
-        assertThat(ret).isEqualTo(1);
+       MessageHandlerContext context = new MessageHandlerContext(message, "192.168.0.1");
+       handler.serve(context);
+       Api_S3_Req ret = handler.getApiS3Req();
+       String ExpectedPath = "www.naver.com/parkjunoh/test";
+       String ExpectedName = "firware.bin--------------------------------------------------------------------------------------------------------------";
+       String slash = "/";
+
+       assertEquals("1", ret.getDeviceType());
+       assertEquals("0x01", ret.getContentType());
+       assertEquals("fileVersion1234567890abcdefghijkmlnolprstuvwxyz!@#", ret.getVersion());
+       assertEquals(ExpectedPath, ret.getFilePath());
+
+       assertEquals(150, ExpectedPath.length() + slash.length() + ExpectedName.length());
+       assertEquals(150, ret.getFilePath().length() + slash.length() + ret.getFilename().length());
+       assertEquals(ExpectedName, ret.getFilename());
     }
 }

@@ -52,8 +52,8 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
         cmd = meMessagePreProcessor.process(cmd);
         int payloadLength = MeMessageDecoder.getPayloadLength(msgBuf);
         int readPayloadLength = payloadLength;
-        if(payloadLength == 99 && (cmd.equals("S3") || cmd.equals("S4"))) {
-            readPayloadLength = 224;
+        if(payloadLength == 99 && (cmd.equals("S3"))) {
+            readPayloadLength = 208;
         }
 
         String beanName = "Message_" + cmd + "_Handler";
@@ -71,6 +71,15 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
                 + adapterApplicationProperties.getApiServerPort()
                 + "/v1/control/"
                 + message.getChargerId();
+
+        if(payloadLength == 99 && (cmd.equals("S3"))) {
+            serverDomain = "http://"
+            + adapterApplicationProperties.getApiServerAddress() 
+            + ':'
+            + adapterApplicationProperties.getApiServerPort()
+            + "/v1/content/";
+        }
+
         MessageHandlerContext context = new MessageHandlerContext(message, serverDomain);
 
         Integer ret = (Integer)handler.serve(context);
