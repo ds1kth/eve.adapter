@@ -1,4 +1,4 @@
-server.port : 8081
+server.port : 8089
 
 socketServer:
   address: 192.168.220.79
