@@ -1,8 +1,21 @@
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.2.RELEASE")
+		classpath("org.hidetake:gradle-ssh-plugin:2.2.0")
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.5.6'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
+
+apply plugin: 'org.hidetake.ssh'
 
 group = 'com.chargev'
 version = '0.0.1-SNAPSHOT'
@@ -43,4 +56,50 @@ bootJar {
 
 springBoot {
 	buildInfo()
+}
+
+remotes {
+	// 운영 배포
+	prod1 {
+		host = '211.253.39.246'
+		port = 10922
+		user = 'root'
+		password = 'ckwlql!23'
+	}
+	prod2 {
+		host = '211.253.39.246'
+		port = 10923
+		user = 'root'
+		password = 'ckwlql!23'
+	}
+}
+
+ssh.settings {
+	knownHosts = allowAnyHosts
+}
+
+task deployProd {
+	doLast {
+		ssh.run {
+			session(remotes.prod1) {
+				// 배포 파일명 설정 - #{프로젝트명}-#{프로젝트버전}.jar
+				final jarName = rootProject.name + "-" + rootProject.version + ".jar"
+				put from: "${projectDir}/build/libs/${jarName}", into: DEPLOY_PATH
+				execute "service eve.adapter stop"
+				execute "unlink /etc/init.d/eve.adapter"
+				execute "ln -s /root/demon/${jarName} /etc/init.d/eve.adapter"
+				execute "service eve.adapter start"
+			}
+
+			session(remotes.prod2) {
+				// 배포 파일명 설정 - #{프로젝트명}-#{프로젝트버전}.jar
+				final jarName = rootProject.name + "-" + rootProject.version + ".jar"
+				put from: "${projectDir}/build/libs/${jarName}", into: DEPLOY_PATH
+				execute "service eve.adapter stop"
+				execute "unlink /etc/init.d/eve.adapter"
+				execute "ln -s /root/demon/${jarName} /etc/init.d/eve.adapter"
+				execute "service eve.adapter start"
+			}
+		}
+	}
 }
