@@ -57,14 +57,18 @@ public class Message_S3_Handler implements MessageHandler<MessageHandlerContext,
         String startStop = new String(startStopTemp);
         String contentsType = new String(contentsTypeTemp);
         contentsType = "0x" + contentsType;
-        String firmwareVersion = new String(_strFirmwareVersion);
+        String firmwareVersion = new String(_strFirmwareVersion).trim();
 
         Api_S3_Req req = null;
         String url = context.makeUrl("/transmit");
         String pathName = new String(_strIPAddress);
         int nameStartPos = pathName.lastIndexOf("/");
-        String path = pathName.substring(0, nameStartPos);
-        String name = pathName.substring(nameStartPos + 1);
+        String path = pathName.substring(0, nameStartPos).trim();
+        String name = pathName.substring(nameStartPos + 1).trim();
+
+        // path 에서 url 정보는 없애버린다. 
+        nameStartPos = path.lastIndexOf("/");
+        path = path.substring(nameStartPos + 1).trim();
         
         req = Api_S3_Req.builder()
                 .chargerId(context.getMessage().getChargerId())
@@ -75,7 +79,7 @@ public class Message_S3_Handler implements MessageHandler<MessageHandlerContext,
                 .filePath(path)
                 .build();
         apiS3Req = req;
-        context.sendRequest(req, url, context.getMessage().getCmd(), "KT(B2)");
+        context.sendRequest(req, url, context.getMessage().getCmd(), "K1");
 
         RespMessage respMessage = RespMessage.builder()
                 .INS("3S")

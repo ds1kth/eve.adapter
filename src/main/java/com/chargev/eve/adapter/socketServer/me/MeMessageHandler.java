@@ -77,7 +77,7 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
             + adapterApplicationProperties.getApiServerAddress() 
             + ':'
             + adapterApplicationProperties.getApiServerPort()
-            + "/v1/content/";
+            + "/v1/content";
         }
 
         MessageHandlerContext context = new MessageHandlerContext(message, serverDomain);
