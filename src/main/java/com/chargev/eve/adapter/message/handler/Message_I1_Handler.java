@@ -37,7 +37,7 @@ public class Message_I1_Handler implements MessageHandler<MessageHandlerContext,
         else
         {
             // public static byte DEF_ASC_FOR = 0x34; // 숫자 4
-            resetType = "4";    // H/W Reset (전체 Reset)
+            resetType = "1";    // H/W Reset (전체 Reset)
         }
 
         switch (resetType) {
