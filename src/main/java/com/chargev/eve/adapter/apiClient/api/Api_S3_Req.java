@@ -14,6 +14,6 @@ public class Api_S3_Req {
     private String deviceType;
     private String contentType;
     private String Version;
-    private String filename;
+    private String fileName;
     private String filePath;
 }
