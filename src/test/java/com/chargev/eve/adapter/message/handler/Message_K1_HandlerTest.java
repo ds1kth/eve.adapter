@@ -1,0 +1,65 @@
+package com.chargev.eve.adapter.message.handler;
+
+import com.chargev.eve.adapter.apiClient.api.Api_K1_Req;
+import com.chargev.eve.adapter.apiClient.api.Api_S3_Req;
+import com.chargev.eve.adapter.message.Message;
+import com.chargev.eve.adapter.message.MessageHandlerContext;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class Message_K1_HandlerTest {
+
+    Message_K1_Handler handler = new Message_K1_Handler();
+
+    @Test
+    void K1전문검증_성공케이스_ML_86(){
+        Message message = Message.builder()
+                .chargerId("3100012111")
+                .payload("1010010006643191202205201250002022052013500000000000000005324050R000100000010000000000")
+                .payloadLength(86)
+                .cmd("K1").build();
+
+        MessageHandlerContext context = new MessageHandlerContext(message, "192.168.0.1");
+        handler.serve(context);
+
+        Api_K1_Req ret = handler.getApiK1Req();
+        String ExpectedUserUID = "1010010006643191";
+        String ExpectedStartDate = "20220520125000";
+        String ExpectedEndDate = "20220520135000";
+        String ExpectedDBUniq = "00000000000005324050";
+        String ExpectedResCan = "R";
+
+        assertEquals(ExpectedUserUID, ret.getBytUserUID());
+        assertEquals(ExpectedStartDate, ret.getBytStartDate());
+        assertEquals(ExpectedEndDate, ret.getBytEndDate());
+        assertEquals(ExpectedDBUniq, ret.getBytDBUniq());
+        assertEquals(ExpectedResCan, ret.getBytResCan());
+    }
+
+    @Test
+    void K1전문검증_성공케이스_ML_65(){
+        Message message = Message.builder()
+                .chargerId("3100012111")
+                .payload("101001000664319120220520113000202205201230005323407             R")
+                .payloadLength(65)
+                .cmd("K1").build();
+
+        MessageHandlerContext context = new MessageHandlerContext(message, "192.168.0.1");
+        handler.serve(context);
+
+        Api_K1_Req ret = handler.getApiK1Req();
+        String ExpectedUserUID = "1010010006643191";
+        String ExpectedStartDate = "20220520113000";
+        String ExpectedEndDate = "20220520123000";
+        String ExpectedDBUniq = "5323407             ";
+        String ExpectedResCan = "R";
+
+        assertEquals("3100012111", ret.getBytChargerId());
+        assertEquals(ExpectedUserUID, ret.getBytUserUID());
+        assertEquals(ExpectedStartDate, ret.getBytStartDate());
+        assertEquals(ExpectedEndDate, ret.getBytEndDate());
+        assertEquals(ExpectedDBUniq, ret.getBytDBUniq());
+        assertEquals(ExpectedResCan, ret.getBytResCan());
+    }    
+}
