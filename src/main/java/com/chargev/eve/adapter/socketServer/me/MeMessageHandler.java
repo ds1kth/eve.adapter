@@ -72,7 +72,7 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
                 + "/v1/control/"
                 + message.getChargerId();
 
-        if(payloadLength == 99 && (cmd.equals("S3"))) {
+        if((payloadLength == 99 && (cmd.equals("S3"))) || cmd.equals("K1")) {
             serverDomain = "http://"
             + adapterApplicationProperties.getApiServerAddress() 
             + ':'
