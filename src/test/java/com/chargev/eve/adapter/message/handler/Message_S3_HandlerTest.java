@@ -118,4 +118,29 @@ class Message_S3_HandlerTest {
 //        assertEquals(150, ret.getFilePath().length() + slash.length() + ret.getFilename().length());
 //        assertEquals(ExpectedName, ret.getFilename());
     }
+
+    @Test
+    void S3전문검증_성공케이스_회원정보다운로드(){
+        Message message = Message.builder()
+                .chargerId("3100012111")
+                .payload("205S105Yhttp://211.251.236.84/member/psmember.txt                                                                                                             2022052714                                        ")
+                .payloadLength(208)
+                .cmd("S3").build();
+
+        MessageHandlerContext context = new MessageHandlerContext(message, "192.168.0.1");
+        handler.serve(context);
+        Api_S3_Req ret = handler.getApiS3Req();
+        String ExpectedPath = "http://211.251.236.84/member/psmember.txt";
+        String ExpectedName = "EVSESlow.exe";
+//        String slash = "/";
+
+        assertEquals("CHARGER", ret.getDeviceType());
+        assertEquals("MEMBER_ALL", ret.getContentType());
+        assertEquals("22052714", ret.getVersion());
+        assertEquals(ExpectedPath, ret.getFilePath());
+
+//        assertEquals(150, ExpectedPath.length() + slash.length() + ExpectedName.length());
+//        assertEquals(150, ret.getFilePath().length() + slash.length() + ret.getFilename().length());
+//        assertEquals(ExpectedName, ret.getFilename());
+    }
 }

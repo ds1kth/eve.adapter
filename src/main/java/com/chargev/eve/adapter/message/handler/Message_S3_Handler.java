@@ -110,6 +110,14 @@ public class Message_S3_Handler implements MessageHandler<MessageHandlerContext,
 
         String firmwareVersion = new String(_strFirmwareVersion).trim();
 
+        if(contentsTypeStr.equals("MEMBER_ALL")) {
+            int length = firmwareVersion.length();
+            if(length > 8){
+                int start = length - 8;
+                firmwareVersion = firmwareVersion.substring(start);
+            }
+        }
+
         Api_S3_Req req = null;
         String url = context.makeUrl("/sendFile");
         String pathName = new String(_strIPAddress).trim();
