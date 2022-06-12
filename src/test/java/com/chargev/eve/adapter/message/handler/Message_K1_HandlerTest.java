@@ -81,4 +81,24 @@ class Message_K1_HandlerTest {
         assertEquals(ExpectedChargerId, ret.getChargerId());
         assertEquals(ExpectedContentType, ret.getContentType());
     }
+
+    @Test
+    void K1전문검증_취소_성공케이스(){
+        //S202206072257115101382004K165195101007246411220220603001300202206030913005492147             CE
+        Message message = Message.builder()
+                .chargerId("5101382004")
+                .payload("195101007246411220220603001300202206030913005492147             C")
+                .payloadLength(65)
+                .cmd("K1").build();
+
+        MessageHandlerContext context = new MessageHandlerContext(message, "192.168.0.1");
+        handler.serve(context);
+
+        Api_K1_Req ret = handler.getApiK1Req();
+        String ExpectedChargerId = "5101382004";
+        String ExpectedContentType = "not_reservation";
+
+        assertEquals(ExpectedChargerId, ret.getChargerId());
+        assertEquals(ExpectedContentType, ret.getContentType());
+    }
 }

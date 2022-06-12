@@ -48,14 +48,21 @@ public class Message_K1_Handler implements MessageHandler<MessageHandlerContext,
                 .chargerId(context.getMessage().getChargerId())
                 .deviceType(teminalTypeStr)
                 .contentType(contentsTypeStr)
-                .Version("00000000")
-                .fileName("1")
+                .Version("F2022052")
+                .fileName("psreserv.txt")
                 .filePath("1")
                 .build();
                 
         Api_K1_Req Api_K1_Req = req;
         this.req = req;
-        context.sendRequest(req, url, context.getMessage().getCmd(), "K1");
+
+        if(isReservationCancel(payload) == false) {
+            this.req.setContentType("not_reservation");
+            // return 0;
+        }
+        else {
+            context.sendRequest(req, url, context.getMessage().getCmd(), "K1");
+        }
 
         RespMessage respMessage = RespMessage.builder()
                 .INS("1K")
@@ -64,5 +71,19 @@ public class Message_K1_Handler implements MessageHandler<MessageHandlerContext,
                 .build();
         context.setRespMessage(respMessage);
         return 1;
+    }
+
+    boolean isReservationCancel(byte[] payload) {
+        int start = CARD_NUMBER_LENGTH + START_DATE_LENGTH + END_DATE_LENGTH + DB_UNIQ_LENGTH;
+        byte[] temp = new byte[1];
+        temp[0] = payload[start];
+        String str = new String(temp);
+
+        if(str.equals("R")) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

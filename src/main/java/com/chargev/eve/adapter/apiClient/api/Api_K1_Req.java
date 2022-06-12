@@ -10,10 +10,10 @@ import lombok.ToString;
 @Builder
 @ToString
 public class Api_K1_Req {
-    String bytChargerId;
-    String bytUserUID;
-    String bytStartDate;
-    String bytEndDate;
-    String bytDBUniq;
-    String bytResCan;
+    private String chargerId;
+    private String deviceType;
+    private String contentType;
+    private String Version;
+    private String fileName;
+    private String filePath;
 }
