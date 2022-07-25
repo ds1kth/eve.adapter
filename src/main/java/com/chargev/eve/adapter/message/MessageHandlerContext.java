@@ -58,6 +58,7 @@ public class MessageHandlerContext {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
+        headers.setBasicAuth("aW50ZXJuYWw6ZXZlaW50ZXJuYWw=");
 
         HttpEntity<String> request = new HttpEntity<>(serialized, headers);
 

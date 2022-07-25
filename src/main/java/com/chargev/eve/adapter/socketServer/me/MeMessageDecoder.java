@@ -151,6 +151,9 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             case "U1": // 설치 전문 발송
             case "V1": // 전압 설정case
             case "H2":
+            case "O1":
+            case "O2":
+            case "O3":
                 return true;
             default :
                 return false;
