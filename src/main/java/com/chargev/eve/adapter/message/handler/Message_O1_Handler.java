@@ -69,7 +69,11 @@ public class Message_O1_Handler implements MessageHandler<MessageHandlerContext,
                         .idTag(idTagStr)
                         .build();
     
-                String url = context.makeUrl("/start");
+                // String url = context.makeUrl("/start");
+                String urlTemp = context.makeUrl();
+                int pos = urlTemp.indexOf("v1") + 2;
+                String url = urlTemp.substring(0, pos);
+                url += "/transaction/" + context.getMessage().getChargerId() + "/start";
                 context.sendRequest(req, url, context.getMessage().getCmd());
             } catch (NumberFormatException e) {
                 log.error("[Exception] {}", e.getStackTrace()[0]);

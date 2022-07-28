@@ -13,6 +13,7 @@ import java.net.URI;
 @Slf4j
 @Service("Message_O3_Handler")
 public class Message_O3_Handler implements MessageHandler<MessageHandlerContext, Integer> {
+    private final int REAL_ML_LENGTH = 3;
     private final int LOCATION_LENGTH = 100;
     private final int RETRIES_LENGTH = 4;
     private final int RETRIEVE_DATE_LENGTH = 20;
@@ -34,8 +35,11 @@ public class Message_O3_Handler implements MessageHandler<MessageHandlerContext,
         byte[] retryInterval = new byte[RETRY_INTERVAL_LENGTH];
 
         int i=0;
-        for(; i<LOCATION_LENGTH; i++){
-            location[i] = payload[i];
+        for(; i<REAL_ML_LENGTH; i++){
+        }
+        
+        for(int k = 0; k<LOCATION_LENGTH; i++, k++){
+            location[k] = payload[i];
         }
 
         for(int k = 0; k<RETRIES_LENGTH; i++, k++){

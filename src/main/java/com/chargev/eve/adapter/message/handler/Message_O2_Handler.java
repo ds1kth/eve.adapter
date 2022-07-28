@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service("Message_O2_Handler")
 public class Message_O2_Handler implements MessageHandler<MessageHandlerContext, Integer> {
-    private final int TRANSACTION_ID_LENGTH = 8;
+    private final int TRANSACTION_ID_LENGTH = 16;
     private final int CONNECTOR_ID_LENGTH = 2;
 
     private Api_O2_Req req = null;
@@ -45,7 +45,7 @@ public class Message_O2_Handler implements MessageHandler<MessageHandlerContext,
             connectorId[k] = payload[i];
         }
 
-        String transactionStr = new String(transactionId);
+        String transactionStr = new String(transactionId).trim();
         String connectorIdStr = new String(connectorId);
         
         try {
@@ -58,8 +58,13 @@ public class Message_O2_Handler implements MessageHandler<MessageHandlerContext,
                     .connectorId(connectorIdInt)
                     .build();
 
-            String url = context.makeUrl("/" + transactionInt + "/stop");
-            context.sendRequest(req, url, context.getMessage().getCmd());
+//            String url = context.makeUrl("/" + connectorIdInt + "/" + transactionInt + "/stop");
+
+             String urlTemp = context.makeUrl();
+             int pos = urlTemp.indexOf("v1") + 2;
+             String url = urlTemp.substring(0, pos);
+             url += "/transaction/" + context.getMessage().getChargerId() + "/" + connectorIdInt + "/" + transactionInt + "/stop";
+            context.sendRequest(null, url, context.getMessage().getCmd());
         } catch (NumberFormatException e) {
             log.error("[Exception] {}", e.getStackTrace()[0]);
             return 0;

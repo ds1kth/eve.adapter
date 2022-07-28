@@ -75,7 +75,7 @@ public class MeMessageDecoder extends ByteToMessageDecoder {
             tempCmd[1] = msgBuf.getByte(CMD_POS + 1);
             String cmd = new String(tempCmd);
 
-            if(cmd.equals("S3") || cmd.equals("S4")){ // S3, S4 전문에만 해당
+            if(cmd.equals("S3") || cmd.equals("S4") || cmd.equals("O3")){ // S3, S4, O3 전문에만 해당
                 byte tempRealML[] = new byte[3];
                 tempRealML[0] = msgBuf.getByte(HEADER_LENGTH);
                 tempRealML[1] = msgBuf.getByte(HEADER_LENGTH + 1);

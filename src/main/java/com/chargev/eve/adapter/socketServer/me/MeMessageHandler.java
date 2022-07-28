@@ -55,6 +55,9 @@ public class MeMessageHandler extends ChannelInboundHandlerAdapter {
         if(payloadLength == 99 && (cmd.equals("S3"))) {
             readPayloadLength = 208;
         }
+        else if(payloadLength == 99 && (cmd.equals("O3"))) {
+            readPayloadLength = 131;
+        }        
 
         String beanName = "Message_" + cmd + "_Handler";
 
