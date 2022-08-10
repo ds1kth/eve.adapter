@@ -3,6 +3,7 @@ package com.chargev.eve.adapter.message.handler;
 
 import com.chargev.eve.adapter.apiClient.api.Api_C1_Common_Start_Req;
 import com.chargev.eve.adapter.apiClient.api.Api_C1_Common_Stop_Req;
+import com.chargev.eve.adapter.message.Message;
 import com.chargev.eve.adapter.message.MessageHandler;
 import com.chargev.eve.adapter.message.MessageHandlerContext;
 import com.chargev.eve.adapter.message.RespMessage;
@@ -41,6 +42,10 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
 
     public Integer serve(MessageHandlerContext context) {
         log.debug("[C1] {}", context);
+
+        // if(isOcpp(context) == true) {
+        //     return 0;
+        // }
 
         String url = null;
         byte[] payload = context.getMessage().getPayload().getBytes();
@@ -345,6 +350,67 @@ public class Message_C1_Handler implements MessageHandler<MessageHandlerContext,
          String tid = new String(temp);
          return tid;
      }
+
+    //  boolean isOcpp(MessageHandlerContext context) {
+    //     switch(context.getMessage().getChargerId()) {
+    //         case "2009563011" :
+    //         case "2009563012" :
+    //         case "2009573011" :
+    //         case "2009573012" :
+    //         case "2009583011" :
+    //         case "2009583012" :
+    //         case "2009593011" :
+    //         case "2009593012" :
+    //         case "2009603011" :
+    //         case "2009603012" :
+    //         case "2009613011" :
+    //         case "2009613012" :
+
+    //             byte[] payload = context.getMessage().getPayload().getBytes();
+    //             String cardNumber = getCardnubmer(false, payload);
+    //             String urlTemp = context.makeUrl();
+    //             int pos = urlTemp.indexOf("v1") + 2;
+    //             String _url = urlTemp.substring(0, pos);
+
+    //             if(isChargingStart(false, payload) == true) {
+    //                 String _payload = "0001" + cardNumber;
+    //                 Message message = Message.builder()
+    //                     .chargerId(context.getMessage().getChargerId())
+    //                     .payload(_payload)
+    //                     .payloadLength(20)
+    //                     .cmd("O1").build();
+    //                 _url += "/transaction/" + context.getMessage().getChargerId() + "/start";
+    //                 MessageHandlerContext _context = new MessageHandlerContext(message, _url);
+    //                 Message_O1_Handler handler = new Message_O1_Handler();
+    //                 handler.serve(_context);
+    //             }
+    //             else {
+    //                 String _tid = getTid(false, payload).trim();
+    //                 int tidLen = _tid.length();
+    //                 int rest = 8 - tidLen;
+    //                 String tidStr = "";
+    //                 for(int i=0; i < rest; i++) {
+    //                     tidStr += "0";
+    //                 }
+    //                 tidStr += _tid;
+    //                 tidStr += "01";
+
+    //                 Message message = Message.builder()
+    //                     .chargerId(context.getMessage().getChargerId())
+    //                     .payload(tidStr)
+    //                     .payloadLength(10)
+    //                     .cmd("O2").build();
+    //                 _url += "/transaction/" + context.getMessage().getChargerId() + "/stop";
+    //                 MessageHandlerContext _context = new MessageHandlerContext(message, _url);
+    //                 Message_O2_Handler handler = new Message_O2_Handler();
+    //                 handler.serve(_context);
+    //             }
+
+    //             return true;
+    //         default :
+    //             return false;
+    //     }
+    //  }
 }
 
 

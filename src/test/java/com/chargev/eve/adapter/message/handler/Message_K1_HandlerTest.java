@@ -85,17 +85,20 @@ class Message_K1_HandlerTest {
     @Test
     void K1전문검증_취소_성공케이스(){
         //S202206072257115101382004K165195101007246411220220603001300202206030913005492147             CE
+        //                             195101007246411220220603001300202206030913005492147
+        //S202207151042592003422018K165101001018465658520220715100016202207151500166064317             CE
+        //                             101001018465658520220715100016202207151500166064317             CE
         Message message = Message.builder()
-                .chargerId("5101382004")
-                .payload("195101007246411220220603001300202206030913005492147             C")
+                .chargerId("2003422018")
+                .payload("101001018465658520220715100016202207151500166064317             CE")
                 .payloadLength(65)
                 .cmd("K1").build();
 
-        MessageHandlerContext context = new MessageHandlerContext(message, "192.168.0.1");
+        MessageHandlerContext context = new MessageHandlerContext(message, "http://52.79.78.191:8082/v1/content");
         handler.serve(context);
 
         Api_K1_Req ret = handler.getApiK1Req();
-        String ExpectedChargerId = "5101382004";
+        String ExpectedChargerId = "2003422018";
         String ExpectedContentType = "not_reservation";
 
         assertEquals(ExpectedChargerId, ret.getChargerId());

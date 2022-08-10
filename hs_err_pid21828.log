@@ -1,0 +1,215 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 264241152 bytes for G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3532), pid=21828, tid=8892
+#
+# JRE version:  (17.0.2+8) (build )
+# Java VM: OpenJDK 64-Bit Server VM (17.0.2+8, mixed mode, emulated-client, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Dsts.lsp.client=vscode -Dsts.log.file=/dev/null -XX:TieredStopAtLevel=1 -Dspring.config.location=file:c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\classes\application.properties org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+
+Host: 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz, 8 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.1503)
+Time: Tue May  3 18:47:50 2022  Windows 10 , 64 bit Build 19041 (10.0.19041.1503) elapsed time: 0.012091 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000273f17042d0):  JavaThread "Unknown thread" [_thread_in_vm, id=8892, stack(0x000000d5af900000,0x000000d5afa00000)]
+
+Stack: [0x000000d5af900000,0x000000d5afa00000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x67564a]
+V  [jvm.dll+0x82fc04]
+V  [jvm.dll+0x8313ae]
+V  [jvm.dll+0x831a13]
+V  [jvm.dll+0x245235]
+V  [jvm.dll+0x672539]
+V  [jvm.dll+0x666e82]
+V  [jvm.dll+0x30401b]
+V  [jvm.dll+0x30b566]
+V  [jvm.dll+0x35b1fe]
+V  [jvm.dll+0x35b42f]
+V  [jvm.dll+0x2daf58]
+V  [jvm.dll+0x2dbec4]
+V  [jvm.dll+0x801881]
+V  [jvm.dll+0x368f81]
+V  [jvm.dll+0x7e0cdc]
+V  [jvm.dll+0x3eb8bf]
+V  [jvm.dll+0x3ed441]
+C  [jli.dll+0x5277]
+C  [ucrtbase.dll+0x21bb2]
+C  [KERNEL32.DLL+0x17034]
+C  [ntdll.dll+0x52651]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ff95c9f5e98, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x00000273f1756b20 GCTaskThread "GC Thread#0" [stack: 0x000000d5afa00000,0x000000d5afb00000] [id=13908]
+  0x00000273f1768600 ConcurrentGCThread "G1 Main Marker" [stack: 0x000000d5afb00000,0x000000d5afc00000] [id=13880]
+  0x00000273f17697b0 ConcurrentGCThread "G1 Conc#0" [stack: 0x000000d5afc00000,0x000000d5afd00000] [id=22100]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ff95c1cb9d7]
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00000273f1700ee0] Heap_lock - owner thread: 0x00000273f17042d0
+
+Heap address: 0x0000000704800000, size: 4024 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 0.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+<Empty>
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x0000000704800000, 0x0000000800000000)
+  region size 2048K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ff95c5ae899]
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Events (1 events):
+Event: 0.006 Loaded shared library c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\java.dll
+
+
+Dynamic libraries:
+0x00007ff615260000 - 0x00007ff61526e000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\java.exe
+0x00007ff9c5ad0000 - 0x00007ff9c5cc5000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007ff9c4cf0000 - 0x00007ff9c4dae000 	C:\Windows\System32\KERNEL32.DLL
+0x00007ff9c3610000 - 0x00007ff9c38d8000 	C:\Windows\System32\KERNELBASE.dll
+0x00007ff9c39f0000 - 0x00007ff9c3af0000 	C:\Windows\System32\ucrtbase.dll
+0x00007ff99ff50000 - 0x00007ff99ff69000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\VCRUNTIME140.dll
+0x00007ff9a32f0000 - 0x00007ff9a3308000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\jli.dll
+0x00007ff9c3b20000 - 0x00007ff9c3cc0000 	C:\Windows\System32\USER32.dll
+0x00007ff9c3970000 - 0x00007ff9c3992000 	C:\Windows\System32\win32u.dll
+0x00007ff9b0760000 - 0x00007ff9b09fa000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.19041.1110_none_60b5254171f9507e\COMCTL32.dll
+0x00007ff9c4db0000 - 0x00007ff9c4ddb000 	C:\Windows\System32\GDI32.dll
+0x00007ff9c4b00000 - 0x00007ff9c4b9e000 	C:\Windows\System32\msvcrt.dll
+0x00007ff9c31e0000 - 0x00007ff9c32ed000 	C:\Windows\System32\gdi32full.dll
+0x00007ff9c32f0000 - 0x00007ff9c338d000 	C:\Windows\System32\msvcp_win.dll
+0x00007ff9c4de0000 - 0x00007ff9c4e10000 	C:\Windows\System32\IMM32.DLL
+0x00007ff9ad160000 - 0x00007ff9ad16c000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\vcruntime140_1.dll
+0x00007ff982a70000 - 0x00007ff982b01000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\msvcp140.dll
+0x00007ff95bee0000 - 0x00007ff95cb27000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\server\jvm.dll
+0x00007ff9c42f0000 - 0x00007ff9c439e000 	C:\Windows\System32\ADVAPI32.dll
+0x00007ff9c4450000 - 0x00007ff9c44ec000 	C:\Windows\System32\sechost.dll
+0x00007ff9c4950000 - 0x00007ff9c4a75000 	C:\Windows\System32\RPCRT4.dll
+0x00007ff9c4e10000 - 0x00007ff9c4e18000 	C:\Windows\System32\PSAPI.DLL
+0x00007ff9c0660000 - 0x00007ff9c0687000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007ff9bbed0000 - 0x00007ff9bbed9000 	C:\Windows\SYSTEM32\WSOCK32.dll
+0x00007ff9baec0000 - 0x00007ff9baeca000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007ff9c4ba0000 - 0x00007ff9c4c0b000 	C:\Windows\System32\WS2_32.dll
+0x00007ff9c1a50000 - 0x00007ff9c1a62000 	C:\Windows\SYSTEM32\kernel.appcore.dll
+0x00007ff9ac460000 - 0x00007ff9ac46a000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\jimage.dll
+0x00007ff9c1720000 - 0x00007ff9c1904000 	C:\Windows\SYSTEM32\DBGHELP.DLL
+0x00007ff9c05f0000 - 0x00007ff9c061c000 	C:\Windows\SYSTEM32\dbgcore.DLL
+0x00007ff9c38e0000 - 0x00007ff9c3962000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007ff998250000 - 0x00007ff998275000 	c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\java.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin;C:\Windows\SYSTEM32;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.19041.1110_none_60b5254171f9507e;c:\Users\chargev\.vscode\extensions\redhat.java-1.5.0-win32-x64\jre\17.0.2-win32-x86_64\bin\server
+
+VM Arguments:
+jvm_args: -Dsts.lsp.client=vscode -Dsts.log.file=/dev/null -XX:TieredStopAtLevel=1 -Dspring.config.location=file:c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\classes\application.properties 
+java_command: org.springframework.ide.vscode.boot.app.BootLanguageServerBootApp
+java_class_path (initial): c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\classes;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\antlr4-runtime-4.5.3.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\byte-buddy-1.10.18.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-codec-1.14.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-io-2.4.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-java-1.33.0-SNAPSHOT.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-lang3-3.10.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-language-server-1.33.0-SNAPSHOT.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-lsp-extensions-1.33.0-SNAPSHOT.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-util-1.33.0-SNAPSHOT.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\commons-yaml-1.33.0-SNAPSHOT.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\gson-2.8.6.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\guava-19.0.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\jakarta.annotation-api-1.3.5.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\lib\jandex-2.0.5.Final.jar;c:\Users\chargev\.vscode\extensions\pivotal.vscode-spring-boot-1.33.0\language-server\BOOT-INF\li
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 4                                         {product} {ergonomic}
+     uint ConcGCThreads                            = 2                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 8                                         {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 2097152                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 264241152                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 4219469824                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 2097152                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 0                                      {pd product} {ergonomic}
+     bool ProfileInterpreter                       = false                                  {pd product} {command line}
+    uintx ProfiledCodeHeapSize                     = 0                                      {pd product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 4219469824                             {manageable} {ergonomic}
+     intx TieredStopAtLevel                        = 1                                         {product} {command line}
+     bool UseCompressedClassPointers               = true                           {product lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\OpenJDK\jdk-11.0.1
+PATH=C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Eclipse Adoptium\jdk-11.0.13.8-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\MongoDB\Server\5.0\bin;C:\Program Files\nodejs\;C:\Program Files\PuTTY\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\OpenJDK\jdk-11.0.1\bin;C:\Users\chargev\AppData\Local\Microsoft\WindowsApps;;C:\Users\chargev\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Bandizip\;C:\Users\chargev\AppData\Roaming\npm;C:\Users\chargev\.dotnet\tools
+USERNAME=chargev
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 140 Stepping 1, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 10 , 64 bit Build 19041 (10.0.19041.1503)
+OS uptime: 1 days 8:10 hours
+Hyper-V role detected
+
+CPU: total 8 (initial active 8) (4 cores per cpu, 2 threads per core) family 6 model 140 stepping 1 microcode 0x9a, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, avx512f, avx512dq, avx512cd, avx512bw, avx512vl, sha, fma, vzeroupper, avx512_vpopcntdq, avx512_vpclmulqdq, avx512_vaes, avx512_vnni, clflush, clflushopt, clwb, avx512_vbmi2, avx512_vbmi, hv
+
+Memory: 4k page, system-wide physical 16092M (544M free)
+TotalPageFile size 65244M (AvailPageFile size 151M)
+current process WorkingSet (physical memory assigned to process): 10M, peak: 10M
+current process commit charge ("private bytes"): 55M, peak: 307M
+
+vm_info: OpenJDK 64-Bit Server VM (17.0.2+8) for windows-amd64 JRE (17.0.2+8), built on Jan 20 2022 04:52:34 by "" with MS VC++ 16.7 (VS2019)
+
+END.
