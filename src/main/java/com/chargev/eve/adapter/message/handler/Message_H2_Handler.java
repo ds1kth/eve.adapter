@@ -35,7 +35,7 @@ public class Message_H2_Handler implements MessageHandler<MessageHandlerContext,
             freeOrNot = "02";   // 무료
         }
 
-        String url = context.makeUrl("/requestPaid");
+        String url = context.makeUrl("/requestPaid/" + freeOrNot);
 
         context.sendRequest(null, url, context.getMessage().getCmd());
 
